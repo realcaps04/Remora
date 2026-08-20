@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { FastForward, Info, Menu, Rewind, Settings, Star } from 'lucide-react'
 import { Header } from '../components/common/Header'
 import { DeviceStatusBadge } from '../components/devices/DeviceStatus'
+import { FixCodesSheet } from '../components/devices/FixCodesSheet'
 import { BottomSheet } from '../components/layout/Primitives'
 import { DeviceRemote } from '../components/remote/DeviceRemote'
 import { NumericPad } from '../components/remote/NumericPad'
@@ -12,6 +13,7 @@ import { useStore } from '../state/store'
 export function DeviceRemoteScreen({ deviceId }: { deviceId: string }) {
   const { deviceById, send, back, push, toggleFavorite } = useStore()
   const [more, setMore] = useState(false)
+  const [fixOpen, setFixOpen] = useState(false)
   const device = deviceById(deviceId)
 
   if (!device) {
@@ -61,6 +63,18 @@ export function DeviceRemoteScreen({ deviceId }: { deviceId: string }) {
         send={(command, value) => send(device.id, command, value !== undefined ? { value } : undefined)}
       />
 
+      {device.connectionType === 'ir' ? (
+        <div className="px-8 pb-4">
+          <button
+            type="button"
+            onClick={() => setFixOpen(true)}
+            className="w-full text-center text-[13px] text-[#8e8e93]"
+          >
+            Not working? Try another code
+          </button>
+        </div>
+      ) : null}
+
       {showExtras ? (
         <div className="px-8 pb-8">
           <button
@@ -72,6 +86,8 @@ export function DeviceRemoteScreen({ deviceId }: { deviceId: string }) {
           </button>
         </div>
       ) : null}
+
+      <FixCodesSheet open={fixOpen} device={device} onClose={() => setFixOpen(false)} />
 
       <BottomSheet open={more} title="More" onClose={() => setMore(false)}>
         <div className="mb-5 flex justify-center">

@@ -188,6 +188,7 @@ type StoreValue = State & {
     type: DeviceType
     roomId: string
     connectionType: ConnectionType
+    irProfileId?: string
   }) => void
   addRoom: (name: string) => string
   moveDevice: (deviceId: string, roomId: string) => void
@@ -322,6 +323,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       type: DeviceType
       roomId: string
       connectionType: ConnectionType
+      irProfileId?: string
     }) => {
       const device: Device = {
         id: crypto.randomUUID(),
@@ -333,6 +335,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         status: 'connected',
         favorite: false,
         lastUsedAt: Date.now(),
+        irProfileId: input.irProfileId,
         state: defaultDeviceState(),
       }
       dispatch({ type: 'addDevice', device })

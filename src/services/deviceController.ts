@@ -80,6 +80,12 @@ export function applyCommand(
         state.power = state.speed > 0
       }
       break
+    case 'fanLight':
+      state.brightness = state.brightness > 0 ? 0 : 100
+      break
+    case 'reverse':
+      state.oscillation = !state.oscillation
+      break
     case 'oscillation':
       state.oscillation = !state.oscillation
       break
@@ -166,7 +172,11 @@ export function commandLabel(device: Device, command: string, payload?: CommandP
     case 'speedUp':
     case 'speedDown':
     case 'setSpeed':
-      return `${name} → Speed ${device.state.speed}`
+      return `${name} → Speed ${device.state.speed || 'Off'}`
+    case 'fanLight':
+      return `${name} light ${device.state.brightness > 0 ? 'on' : 'off'}`
+    case 'reverse':
+      return `${name} reverse ${device.state.oscillation ? 'on' : 'off'}`
     case 'oscillation':
       return `${name} oscillation ${device.state.oscillation ? 'on' : 'off'}`
     case 'tempUp':

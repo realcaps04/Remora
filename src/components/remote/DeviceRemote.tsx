@@ -17,7 +17,7 @@ export function DeviceRemote({
 
   if (device.type === 'tv' || device.type === 'projector') return <TVRemote device={device} send={fire} />
   if (device.type === 'dth') return <DTHRemote device={device} send={fire} />
-  if (device.type === 'fan' || device.type === 'cooler') return <FanRemote device={device} send={fire} />
+  if (device.type === 'fan' || device.type === 'cooler') return <FanRemote device={device} send={send} />
   if (device.type === 'ac') return <ACRemote device={device} send={fire} />
   if (device.type === 'soundbar' || device.type === 'speaker' || device.type === 'hometheatre') {
     return <SoundbarRemote device={device} send={fire} />

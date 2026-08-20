@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { Header } from '../components/common/Header'
 import { Toggle } from '../components/common/Toggle'
-import { BottomSheet } from '../components/layout/Primitives'
+import { BottomSheet, PageContainer } from '../components/layout/Primitives'
 import { CONNECTION_OPTIONS, brandsFor, categoryLabel } from '../data/catalog'
+import { profilesFor, profileById } from '../data/irProfiles'
 import { useStore } from '../state/store'
-import { PageContainer } from '../components/layout/Primitives'
+import { FixCodesSheet } from '../components/devices/FixCodesSheet'
 import type { ConnectionType } from '../types'
 
 export function DeviceSettingsScreen({ deviceId }: { deviceId: string }) {
@@ -13,7 +14,7 @@ export function DeviceSettingsScreen({ deviceId }: { deviceId: string }) {
   const device = deviceById(deviceId)
   const [renameOpen, setRenameOpen] = useState(false)
   const [name, setName] = useState(device?.name ?? '')
-  const [sheet, setSheet] = useState<'brand' | 'connection' | 'room' | null>(null)
+  const [sheet, setSheet] = useState<'brand' | 'connection' | 'room' | 'codes' | null>(null)
 
   if (!device) return null
 
@@ -34,6 +35,11 @@ export function DeviceSettingsScreen({ deviceId }: { deviceId: string }) {
           label="Connection"
           value={CONNECTION_OPTIONS.find((c) => c.id === device.connectionType)?.title ?? device.connectionType}
           onClick={() => setSheet('connection')}
+        />
+        <Row
+          label="Remote codes"
+          value={profileById(device.irProfileId, device.type, device.brand).name}
+          onClick={() => setSheet('codes')}
         />
         <Row
           label="Room"
@@ -84,7 +90,10 @@ export function DeviceSettingsScreen({ deviceId }: { deviceId: string }) {
               type="button"
               className="block w-full py-3 text-left text-[15px]"
               onClick={() => {
-                updateDevice(device.id, { brand })
+                updateDevice(device.id, {
+                  brand,
+                  irProfileId: profilesFor(device.type, brand)[0]?.id,
+                })
                 setSheet(null)
               }}
             >
@@ -125,6 +134,7 @@ export function DeviceSettingsScreen({ deviceId }: { deviceId: string }) {
           </button>
         ))}
       </BottomSheet>
+      <FixCodesSheet open={sheet === 'codes'} device={device} onClose={() => setSheet(null)} />
     </div>
   )
 }

@@ -97,6 +97,7 @@ export type Device = {
   status: DeviceStatus
   favorite: boolean
   lastUsedAt: number
+  irProfileId?: string
   state: DeviceState
 }
 
