@@ -76,7 +76,7 @@ const initial: State = {
     haptics: true,
     sound: false,
     theme: 'dark',
-    defaultRemote: 'living-tv',
+    defaultRemote: null,
   },
 }
 
@@ -186,7 +186,7 @@ type StoreValue = State & {
     roomId: string
     connectionType: ConnectionType
   }) => void
-  addRoom: (name: string) => void
+  addRoom: (name: string) => string
   moveDevice: (deviceId: string, roomId: string) => void
   removeDevice: (id: string) => void
   renameDevice: (id: string, name: string) => void
@@ -334,10 +334,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   )
 
   const addRoom = useCallback((name: string) => {
-    dispatch({
-      type: 'addRoom',
-      room: { id: crypto.randomUUID(), name },
-    })
+    const room = { id: crypto.randomUUID(), name }
+    dispatch({ type: 'addRoom', room })
+    return room.id
   }, [])
 
   const moveDevice = useCallback((deviceId: string, roomId: string) => {
