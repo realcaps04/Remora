@@ -13,7 +13,7 @@ const HOME_CATEGORIES = CATEGORIES.filter((c) =>
 )
 
 export function HomeScreen() {
-  const { devices, rooms, devicesInRoom, devicesOfType, roomById, send, push } = useStore()
+  const { devices, rooms, devicesInRoom, devicesOfType, roomById, send, push, setSearch } = useStore()
   const recent = [...devices].sort((a, b) => b.lastUsedAt - a.lastUsedAt).slice(0, 4)
   const quick = devices.slice(0, 4)
 
@@ -37,7 +37,10 @@ export function HomeScreen() {
             type="button"
             className="remote-btn mat focus-ring !h-11 !w-11"
             aria-label="Search"
-            onClick={() => push({ name: 'search' })}
+            onClick={() => {
+              setSearch('')
+              push({ name: 'search' })
+            }}
           >
             <Search size={18} />
           </button>

@@ -13,7 +13,7 @@ import type { DeviceGroup } from '../types'
 const GROUPS: DeviceGroup[] = ['entertainment', 'climate', 'lighting', 'other']
 
 export function DevicesScreen() {
-  const { devicesOfType, push } = useStore()
+  const { devicesOfType, push, setSearch } = useStore()
   const [query, setQuery] = useState('')
   const [requestOpen, setRequestOpen] = useState(false)
   const q = query.trim().toLowerCase()
@@ -37,7 +37,10 @@ export function DevicesScreen() {
             type="button"
             className="text-[#8e8e93]"
             aria-label="Search"
-            onClick={() => push({ name: 'search' })}
+            onClick={() => {
+              setSearch('')
+              push({ name: 'search' })
+            }}
           >
             <Search size={18} />
           </button>

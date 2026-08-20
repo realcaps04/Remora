@@ -58,9 +58,13 @@ const COPY: Record<
 export function RequestHubSheet({
   open,
   onClose,
+  initialKind = null,
+  initialSubject = '',
 }: {
   open: boolean
   onClose: () => void
+  initialKind?: FeedbackKind | null
+  initialSubject?: string
 }) {
   const { requestProduct } = useStore()
   const [kind, setKind] = useState<FeedbackKind | null>(null)
@@ -72,13 +76,13 @@ export function RequestHubSheet({
 
   useEffect(() => {
     if (!open) return
-    setKind(null)
-    setSubject('')
+    setKind(initialKind)
+    setSubject(initialSubject)
     setBrand('')
     setModel('')
     setDetails('')
     setSent(false)
-  }, [open])
+  }, [open, initialKind, initialSubject])
 
   const copy = kind ? COPY[kind] : null
 
