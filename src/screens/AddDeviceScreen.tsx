@@ -3,7 +3,7 @@ import { Search } from 'lucide-react'
 import { Header } from '../components/common/Header'
 import { Button } from '../components/common/Button'
 import { DeviceIcon } from '../components/devices/DeviceIcon'
-import { BRANDS, CATEGORIES, CONNECTION_OPTIONS, categoryLabel } from '../data/catalog'
+import { CATEGORIES, CONNECTION_OPTIONS, brandsFor, categoryLabel } from '../data/catalog'
 import { PowerButton } from '../components/remote/PowerButton'
 import { useStore } from '../state/store'
 import type { ConnectionType, DeviceType } from '../types'
@@ -23,8 +23,8 @@ export function AddDeviceScreen({ initialType }: { initialType?: DeviceType }) {
   const [powerOn, setPowerOn] = useState(false)
 
   const brands = useMemo(
-    () => BRANDS.filter((b) => b.toLowerCase().includes(query.toLowerCase())),
-    [query],
+    () => brandsFor(type).filter((b) => b.toLowerCase().includes(query.toLowerCase())),
+    [query, type],
   )
 
   const suggested = `${rooms.find((r) => r.id === roomId)?.name ?? ''} ${categoryLabel(type)}`.trim()

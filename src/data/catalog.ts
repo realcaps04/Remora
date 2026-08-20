@@ -68,6 +68,8 @@ export const BRANDS = [
   'Philips',
   'Havells',
   'Crompton',
+  'Orient',
+  'Colorbot',
   'Daikin',
   'Hisense',
   'TCL',
@@ -76,6 +78,21 @@ export const BRANDS = [
   'Xiaomi',
   'Other Brand',
 ]
+
+const FAN_BRANDS = [
+  'Havells',
+  'Crompton',
+  'Orient',
+  'Colorbot',
+  'Panasonic',
+  'Philips',
+  'Other Brand',
+]
+
+export function brandsFor(type: DeviceType) {
+  if (type === 'fan' || type === 'cooler') return FAN_BRANDS
+  return BRANDS
+}
 
 export function categoryLabel(type: DeviceType) {
   return CATEGORIES.find((c) => c.type === type)?.label ?? 'Device'

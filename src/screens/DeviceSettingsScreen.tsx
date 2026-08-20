@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Header } from '../components/common/Header'
 import { Toggle } from '../components/common/Toggle'
 import { BottomSheet } from '../components/layout/Primitives'
-import { BRANDS, CONNECTION_OPTIONS, categoryLabel } from '../data/catalog'
+import { CONNECTION_OPTIONS, brandsFor, categoryLabel } from '../data/catalog'
 import { useStore } from '../state/store'
 import { PageContainer } from '../components/layout/Primitives'
 import type { ConnectionType } from '../types'
@@ -78,7 +78,7 @@ export function DeviceSettingsScreen({ deviceId }: { deviceId: string }) {
 
       <BottomSheet open={sheet === 'brand'} title="Brand" onClose={() => setSheet(null)}>
         <div className="max-h-72 overflow-y-auto">
-          {BRANDS.map((brand) => (
+          {brandsFor(device.type).map((brand) => (
             <button
               key={brand}
               type="button"
