@@ -47,6 +47,11 @@ export function SearchScreen() {
           </div>
         ) : null}
         <div className="mt-5 flex flex-col gap-2">
+          {results.length === 0 ? (
+            <p className="pt-6 text-[15px] text-[#8e8e93]">
+              {devices.length === 0 ? 'No devices to search yet.' : 'No matches.'}
+            </p>
+          ) : null}
           {results.map((device) => (
             <DeviceCard
               key={device.id}

@@ -96,11 +96,9 @@ function reducer(state: State, action: Action): State {
           ? { name: 'home' }
           : action.tab === 'devices'
             ? { name: 'devices' }
-            : action.tab === 'scenes'
-              ? { name: 'scenes' }
-              : action.tab === 'activity'
-                ? { name: 'activity' }
-                : { name: 'settings' }
+            : action.tab === 'activity'
+              ? { name: 'activity' }
+              : { name: 'settings' }
       return { ...state, stack: [route] }
     }
     case 'patchDevice':
@@ -201,9 +199,8 @@ type StoreValue = State & {
 const StoreContext = createContext<StoreValue | null>(null)
 
 function tabFromRoute(route: Route): Tab {
-  if (route.name === 'scenes') return 'scenes'
   if (route.name === 'activity') return 'activity'
-  if (route.name === 'settings' || route.name === 'ask') return 'settings'
+  if (route.name === 'settings' || route.name === 'ask' || route.name === 'scenes') return 'settings'
   if (
     route.name === 'devices' ||
     route.name === 'category' ||

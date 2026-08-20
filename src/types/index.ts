@@ -156,4 +156,4 @@ export type Route =
   | { name: 'ask' }
   | { name: 'search' }
 
-export type Tab = 'home' | 'devices' | 'scenes' | 'activity' | 'settings'
+export type Tab = 'home' | 'devices' | 'activity' | 'settings'

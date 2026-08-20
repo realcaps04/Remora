@@ -19,6 +19,7 @@ export function HomeScreen() {
         <div className="flex items-start justify-between">
           <div>
             <Wordmark className="text-[18px] text-white" />
+            <p className="mt-1 text-[12px] tracking-wide text-[#8e8e93]">by Caps</p>
             <h1 className="mt-5 text-[34px] font-medium leading-none tracking-tight">{greeting()}</h1>
             <p className="mt-3 text-[15px] text-[#8e8e93]">
               {devices.length > 0 ? 'Welcome back to Remora.' : 'Add a device to start controlling your home.'}

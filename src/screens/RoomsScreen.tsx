@@ -14,6 +14,9 @@ export function RoomsScreen() {
     <div className="page-scroll">
       <Header title="Rooms" onBack={back} />
       <PageContainer>
+        {rooms.length === 0 ? (
+          <p className="mb-4 text-[15px] text-[#8e8e93]">No rooms yet. Add one to organize devices.</p>
+        ) : null}
         <div className="flex flex-col gap-2.5">
           {rooms.map((room) => {
             const list = devicesInRoom(room.id)

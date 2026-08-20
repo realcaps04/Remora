@@ -2,7 +2,7 @@
 
 **One app. Every remote.**
 
-Remora is a premium, mobile-first universal remote. This repository is the first frontend phase: a production-quality prototype with realistic mock devices, tactile remotes, and architecture ready for IR, Bluetooth, Wi-Fi, and smart-home integrations.
+Remora is a premium, mobile-first universal remote. This repository is the first frontend phase: a production-quality app with tactile remotes and architecture ready for IR, Bluetooth, Wi-Fi, and smart-home integrations.
 
 ## Run
 

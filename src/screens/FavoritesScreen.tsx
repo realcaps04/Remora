@@ -26,11 +26,8 @@ export function FavoritesScreen() {
           ))}
         </div>
 
-        {favDevices.length === 0 ? null : (
-          <h2 className="mt-8 mb-3 text-[13px] text-[#8e8e93]">Quick actions</h2>
-        )}
         {favActions.length > 0 ? (
-        <h2 className="mt-8 mb-3 text-[13px] text-[#8e8e93]">Quick actions</h2>
+          <h2 className="mt-8 mb-3 text-[13px] text-[#8e8e93]">Quick actions</h2>
         ) : null}
         <div className="flex flex-col gap-2">
           {favActions.map((action) => {

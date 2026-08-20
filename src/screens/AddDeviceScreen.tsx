@@ -10,14 +10,15 @@ import type { ConnectionType, DeviceType } from '../types'
 import { PageContainer } from '../components/layout/Primitives'
 
 export function AddDeviceScreen({ initialType }: { initialType?: DeviceType }) {
-  const { rooms, addDevice, back, replace } = useStore()
+  const { rooms, addDevice, addRoom, back, replace } = useStore()
   const [step, setStep] = useState(initialType ? 2 : 1)
   const [type, setType] = useState<DeviceType>(initialType ?? 'tv')
   const [connection, setConnection] = useState<ConnectionType>('ir')
   const [brand, setBrand] = useState('Samsung')
   const [query, setQuery] = useState('')
   const [name, setName] = useState('')
-  const [roomId, setRoomId] = useState(rooms[0]?.id ?? 'living')
+  const [roomId, setRoomId] = useState(rooms[0]?.id ?? '')
+  const [newRoomName, setNewRoomName] = useState('Home')
   const [tested, setTested] = useState(false)
   const [powerOn, setPowerOn] = useState(false)
 
@@ -136,23 +137,36 @@ export function AddDeviceScreen({ initialType }: { initialType?: DeviceType }) {
               className="mb-5 h-12 w-full rounded-2xl bg-[#161618] px-4 text-[16px] outline-none"
             />
             <label className="mb-2 block text-[13px] text-[#8e8e93]">Room</label>
-            <div className="mb-8 flex flex-col gap-2">
-              {rooms.map((room) => (
-                <button
-                  key={room.id}
-                  type="button"
-                  onClick={() => setRoomId(room.id)}
-                  className="rounded-2xl bg-[#111113] px-4 py-3 text-left text-[15px]"
-                  style={{ boxShadow: roomId === room.id ? 'inset 0 0 0 1px rgba(255,255,255,0.28)' : undefined }}
-                >
-                  {room.name}
-                </button>
-              ))}
-            </div>
+            {rooms.length === 0 ? (
+              <input
+                value={newRoomName}
+                onChange={(e) => setNewRoomName(e.target.value)}
+                placeholder="Room name"
+                className="mb-8 h-12 w-full rounded-2xl bg-[#161618] px-4 text-[16px] outline-none"
+              />
+            ) : (
+              <div className="mb-8 flex flex-col gap-2">
+                {rooms.map((room) => (
+                  <button
+                    key={room.id}
+                    type="button"
+                    onClick={() => setRoomId(room.id)}
+                    className="rounded-2xl bg-[#111113] px-4 py-3 text-left text-[15px]"
+                    style={{ boxShadow: roomId === room.id ? 'inset 0 0 0 1px rgba(255,255,255,0.28)' : undefined }}
+                  >
+                    {room.name}
+                  </button>
+                ))}
+              </div>
+            )}
             <Button
               onClick={() => {
-                const finalName = name.trim() || suggested
-                addDevice({ name: finalName, brand, type, roomId, connectionType: connection })
+                const targetRoom =
+                  roomId || addRoom(newRoomName.trim() || 'Home')
+                const roomName =
+                  rooms.find((r) => r.id === targetRoom)?.name || newRoomName.trim() || 'Home'
+                const finalName = name.trim() || `${roomName} ${categoryLabel(type)}`.trim()
+                addDevice({ name: finalName, brand, type, roomId: targetRoom, connectionType: connection })
                 replace({ name: 'category', type })
               }}
             >

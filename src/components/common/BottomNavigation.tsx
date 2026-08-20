@@ -1,11 +1,10 @@
-import { Clock3, House, LayoutGrid, Settings, Sparkles } from 'lucide-react'
+import { Clock3, House, LayoutGrid, Settings } from 'lucide-react'
 import type { Tab } from '../../types'
 import { cn } from '../../lib/cn'
 
 const ITEMS: { id: Tab; label: string; Icon: typeof House }[] = [
   { id: 'home', label: 'Home', Icon: House },
   { id: 'devices', label: 'Devices', Icon: LayoutGrid },
-  { id: 'scenes', label: 'Scenes', Icon: Sparkles },
   { id: 'activity', label: 'Activity', Icon: Clock3 },
   { id: 'settings', label: 'Settings', Icon: Settings },
 ]
@@ -19,11 +18,11 @@ export function BottomNavigation({
 }) {
   return (
     <nav
-      className="absolute inset-x-0 bottom-0 z-30 border-t border-white/5 bg-black/90 px-2 pt-2 backdrop-blur-md"
-      style={{ paddingBottom: 'max(10px, env(safe-area-inset-bottom))' }}
+      className="pointer-events-none absolute inset-x-0 bottom-0 z-30 px-3"
+      style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}
       aria-label="Primary"
     >
-      <ul className="flex items-end justify-between">
+      <ul className="nav-frost pointer-events-auto flex items-center justify-between px-1.5 py-1.5">
         {ITEMS.map(({ id, label, Icon }) => {
           const active = tab === id
           return (
@@ -32,8 +31,8 @@ export function BottomNavigation({
                 type="button"
                 onClick={() => onChange(id)}
                 className={cn(
-                  'focus-ring mx-auto flex w-full flex-col items-center gap-1 rounded-xl py-1 text-[10px] tracking-wide',
-                  active ? 'text-white' : 'text-[#636366]',
+                  'focus-ring mx-auto flex w-full flex-col items-center gap-0.5 rounded-2xl py-1.5 text-[10px] tracking-wide transition-colors',
+                  active ? 'bg-white/10 text-white' : 'text-[#8e8e93]',
                 )}
                 aria-current={active ? 'page' : undefined}
               >
