@@ -1,15 +1,15 @@
-import { Search, Star } from 'lucide-react'
+import { LayoutGrid, Search, Star } from 'lucide-react'
 import { Wordmark } from '../components/common/Wordmark'
 import { DeviceIcon } from '../components/devices/DeviceIcon'
 import { DeviceStatusBadge } from '../components/devices/DeviceStatus'
-import { RoomCard } from '../components/devices/DeviceCard'
-import { categoryLabel } from '../data/catalog'
+import { CategoryTile, RoomCard } from '../components/devices/DeviceCard'
+import { CATEGORIES, categoryLabel } from '../data/catalog'
 import { greeting, relativeTime } from '../lib/format'
 import { useStore } from '../state/store'
 import { PageContainer, SectionHeader } from '../components/layout/Primitives'
 
 export function HomeScreen() {
-  const { devices, rooms, devicesInRoom, roomById, send, push } = useStore()
+  const { devices, rooms, devicesInRoom, devicesOfType, roomById, send, push } = useStore()
   const recent = [...devices].sort((a, b) => b.lastUsedAt - a.lastUsedAt).slice(0, 4)
   const quick = devices.slice(0, 4)
 
@@ -18,8 +18,12 @@ export function HomeScreen() {
       <PageContainer className="pt-[max(28px,calc(env(safe-area-inset-top)+12px))]">
         <div className="flex items-start justify-between">
           <div>
-            <Wordmark className="text-[18px] text-white" />
-            <p className="mt-1 text-[12px] tracking-wide text-[#8e8e93]">by Caps</p>
+            <div className="relative mb-1 w-fit pb-3 pr-0.5">
+              <Wordmark className="text-[18px] text-white" />
+              <p className="absolute right-0 top-[calc(100%-2px)] text-[9px] leading-none tracking-wide text-[#8e8e93]">
+                by Caps
+              </p>
+            </div>
             <h1 className="mt-5 text-[34px] font-medium leading-none tracking-tight">{greeting()}</h1>
             <p className="mt-3 text-[15px] text-[#8e8e93]">
               {devices.length > 0 ? 'Welcome back to Remora.' : 'Add a device to start controlling your home.'}
@@ -36,14 +40,33 @@ export function HomeScreen() {
         </div>
 
         <div className="mt-8">
-          <SectionHeader title="Quick Controls" />
+          <SectionHeader title={quick.length === 0 ? 'Categories' : 'Quick Controls'} />
           {quick.length === 0 ? (
-            <EmptyCard
-              title="No devices yet"
-              body="Choose a category, then add your first remote."
-              action="Add Device"
-              onClick={() => push({ name: 'devices' })}
-            />
+            <div className="grid grid-cols-2 gap-2.5">
+              {CATEGORIES.slice(0, 5).map((cat) => (
+                <CategoryTile
+                  key={cat.type}
+                  label={cat.label}
+                  hint={cat.hint}
+                  count={devicesOfType(cat.type).length}
+                  icon={<DeviceIcon type={cat.type} />}
+                  onClick={() => push({ name: 'category', type: cat.type })}
+                />
+              ))}
+              <button
+                type="button"
+                onClick={() => push({ name: 'devices' })}
+                className="focus-ring flex flex-col items-start gap-4 rounded-[22px] bg-[#111113] px-4 py-4 text-left active:scale-[0.98]"
+              >
+                <span className="grid h-12 w-12 place-items-center rounded-full mat-static text-white">
+                  <LayoutGrid size={20} strokeWidth={1.6} />
+                </span>
+                <span>
+                  <span className="block text-[16px] font-medium tracking-tight">View all</span>
+                  <span className="mt-0.5 block text-[12px] text-[#8e8e93]">All categories</span>
+                </span>
+              </button>
+            </div>
           ) : (
             <div className="grid grid-cols-2 gap-2.5">
               {quick.map((device) => (
