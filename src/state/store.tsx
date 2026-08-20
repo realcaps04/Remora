@@ -2,6 +2,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useReducer,
   type ReactNode,
@@ -9,6 +10,7 @@ import {
 import { activity as seedActivity, devices as seedDevices, quickActions as seedQuick, rooms as seedRooms, scenes as seedScenes } from '../data/mock'
 import { defaultDeviceState } from '../data/defaults'
 import { commandLabel, sendCommand as dispatchHardware } from '../services/deviceController'
+import { lookupSignal, transmitIr } from '../services/irLearner'
 import { haptic } from '../lib/haptics'
 import type {
   ActivityEvent,
@@ -17,6 +19,7 @@ import type {
   Device,
   DeviceType,
   FeedbackKind,
+  IrLibrary,
   ProductRequest,
   QuickAction,
   Room,
@@ -66,6 +69,28 @@ type Action =
   | { type: 'patchSettings'; patch: Partial<Settings> }
   | { type: 'setSearch'; query: string }
 
+const PERSIST_KEY = 'remora:persist-v1'
+
+function loadPersist(): Pick<State, 'devices' | 'rooms'> | null {
+  try {
+    const raw = localStorage.getItem(PERSIST_KEY)
+    if (!raw) return null
+    const parsed = JSON.parse(raw) as { devices?: Device[]; rooms?: Room[] }
+    if (!Array.isArray(parsed.devices) || !Array.isArray(parsed.rooms)) return null
+    return { devices: parsed.devices, rooms: parsed.rooms }
+  } catch {
+    return null
+  }
+}
+
+function savePersist(state: State) {
+  try {
+    localStorage.setItem(PERSIST_KEY, JSON.stringify({ devices: state.devices, rooms: state.rooms }))
+  } catch {
+    /* ignore quota */
+  }
+}
+
 const initial: State = {
   stack: [{ name: 'splash' }],
   rooms: seedRooms,
@@ -83,6 +108,7 @@ const initial: State = {
     theme: 'dark',
     defaultRemote: null,
   },
+  ...(typeof window !== 'undefined' ? loadPersist() ?? {} : {}),
 }
 
 function reducer(state: State, action: Action): State {
@@ -189,6 +215,7 @@ type StoreValue = State & {
     roomId: string
     connectionType: ConnectionType
     irProfileId?: string
+    irLibrary?: IrLibrary
   }) => void
   addRoom: (name: string) => string
   moveDevice: (deviceId: string, roomId: string) => void
@@ -240,6 +267,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initial)
   const route = state.stack[state.stack.length - 1] ?? { name: 'home' as const }
 
+  useEffect(() => {
+    savePersist(state)
+  }, [state.devices, state.rooms])
+
   const push = useCallback((next: Route) => dispatch({ type: 'push', route: next }), [])
   const back = useCallback(() => dispatch({ type: 'back' }), [])
   const replace = useCallback((next: Route) => dispatch({ type: 'replace', route: next }), [])
@@ -273,6 +304,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         lastUsedAt: Date.now(),
         status: device.status === 'offline' ? 'offline' : 'connecting',
       }
+      const learned = lookupSignal(device.irLibrary, command, payload)
+      if (learned) await transmitIr(learned)
       const pending = dispatchHardware(next, command, payload)
       dispatch({ type: 'setDevice', device: next })
       const result = await pending
@@ -327,6 +360,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       roomId: string
       connectionType: ConnectionType
       irProfileId?: string
+      irLibrary?: IrLibrary
     }) => {
       const device: Device = {
         id: crypto.randomUUID(),
@@ -338,7 +372,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         status: 'connected',
         favorite: false,
         lastUsedAt: Date.now(),
-        irProfileId: input.irProfileId,
+        irProfileId: input.irLibrary ? `learned:${input.type}:${input.brand.toLowerCase()}` : input.irProfileId,
+        irLibrary: input.irLibrary,
         state: defaultDeviceState(),
       }
       dispatch({ type: 'addDevice', device })

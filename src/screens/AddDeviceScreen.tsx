@@ -3,13 +3,15 @@ import { Search } from 'lucide-react'
 import { Header } from '../components/common/Header'
 import { Button } from '../components/common/Button'
 import { DeviceIcon } from '../components/devices/DeviceIcon'
+import { RecordRemoteSheet } from '../components/devices/RecordRemoteSheet'
 import { CATEGORIES, CONNECTION_OPTIONS, brandsFor, categoryLabel } from '../data/catalog'
 import { learnedProfile, nextProfile, profilesFor, profileById, isNumberedFan } from '../data/irProfiles'
+import { recordedCount } from '../services/irLearner'
 import { PowerButton } from '../components/remote/PowerButton'
 import { FanSpeedPad } from '../components/remote/SpecialtyControls'
 import { useStore } from '../state/store'
-import type { ConnectionType, DeviceType } from '../types'
-import { BottomSheet, PageContainer } from '../components/layout/Primitives'
+import type { ConnectionType, DeviceType, IrLibrary } from '../types'
+import { PageContainer } from '../components/layout/Primitives'
 import { RequestProductCard, RequestProductSheet } from '../components/common/RequestProductSheet'
 
 export function AddDeviceScreen({ initialType }: { initialType?: DeviceType }) {
@@ -26,10 +28,8 @@ export function AddDeviceScreen({ initialType }: { initialType?: DeviceType }) {
   const [powerOn, setPowerOn] = useState(false)
   const [testSpeed, setTestSpeed] = useState(0)
   const [requestOpen, setRequestOpen] = useState(false)
-  const [otherOpen, setOtherOpen] = useState(false)
-  const [learnOpen, setLearnOpen] = useState(false)
-  const [learning, setLearning] = useState(false)
-  const [learned, setLearned] = useState(false)
+  const [recordOpen, setRecordOpen] = useState(false)
+  const [library, setLibrary] = useState<IrLibrary>({})
   const [profileId, setProfileId] = useState<string>()
 
   const brands = useMemo(
@@ -38,8 +38,7 @@ export function AddDeviceScreen({ initialType }: { initialType?: DeviceType }) {
   )
   const codes = profilesFor(type, brand)
   const profile = profileById(profileId, type, brand)
-  const codeIndex = Math.max(0, codes.findIndex((p) => p.id === profile.id))
-  const lastCode = codeIndex === codes.length - 1
+  const recorded = recordedCount(library)
   const suggested = `${rooms.find((r) => r.id === roomId)?.name ?? ''} ${brand} ${categoryLabel(type)}`.trim()
 
   useEffect(() => {
@@ -47,23 +46,21 @@ export function AddDeviceScreen({ initialType }: { initialType?: DeviceType }) {
     setTested(false)
     setPowerOn(false)
     setTestSpeed(0)
-    setLearned(false)
+    setLibrary({})
   }, [type, brand])
 
-  const tryNextCode = () => {
+  const tryNextRemote = () => {
     const next = nextProfile(profile.id, type, brand)
     setProfileId(next.id)
     setPowerOn(false)
     setTestSpeed(0)
     setTested(false)
-    setLearned(false)
-    setOtherOpen(false)
   }
 
   return (
     <div className="page-scroll">
       <Header
-        title={stepTitle(step, learnOpen)}
+        title={stepTitle(step)}
         onBack={step === 1 || (initialType && step === 2) ? back : () => setStep((s) => s - 1)}
       />
       <PageContainer>
@@ -152,9 +149,7 @@ export function AddDeviceScreen({ initialType }: { initialType?: DeviceType }) {
                 : `Point Remora at your ${brand} ${categoryLabel(type).toLowerCase()} and tap Power.`}
             </p>
             <p className="mt-2 max-w-[280px] text-[13px] leading-relaxed text-[#636366]">
-              {isNumberedFan(profile.layout)
-                ? 'BLDC remotes use On, Off, and numbered speeds. If a speed does nothing, try another remote.'
-                : 'If nothing happens, this may not be the right remote. Try another one.'}
+              If this layout doesn’t move the device, record buttons from the original remote.
             </p>
             <div className="my-8 flex w-full justify-center">
               {isNumberedFan(profile.layout) ? (
@@ -179,23 +174,20 @@ export function AddDeviceScreen({ initialType }: { initialType?: DeviceType }) {
               )}
             </div>
             <div className="mb-5 rounded-full bg-white/8 px-3 py-1 text-[12px] tracking-wide text-[#8e8e93]">
-              {learned ? 'Learned remote' : `Remote ${codeIndex + 1} of ${codes.length} · ${profile.name}`}
+              {recorded > 0
+                ? `Recorded remote · ${recorded} buttons`
+                : `${profile.name} · ${codes.findIndex((c) => c.id === profile.id) + 1} of ${codes.length}`}
             </div>
             <p className="mb-5 text-[16px] font-medium">Did it respond?</p>
-            <Button onClick={() => setStep(5)} disabled={!tested && !learned}>
+            <Button onClick={() => setStep(5)} disabled={!tested && recorded === 0}>
               Yes, Continue
             </Button>
-            <Button variant="ghost" className="mt-2.5" onClick={tryNextCode}>
+            <Button variant="ghost" className="mt-2.5" onClick={() => setRecordOpen(true)}>
+              Record from original remote
+            </Button>
+            <Button variant="quiet" className="mt-1" onClick={tryNextRemote}>
               Try another remote
             </Button>
-            <Button variant="quiet" className="mt-1" onClick={() => setOtherOpen(true)}>
-              Other ways
-            </Button>
-            {lastCode ? (
-              <p className="mt-4 max-w-[280px] text-[12px] leading-relaxed text-[#8e8e93]">
-                Last {brand} remote. If this still fails, learn from the original remote.
-              </p>
-            ) : null}
           </div>
         )}
 
@@ -241,7 +233,8 @@ export function AddDeviceScreen({ initialType }: { initialType?: DeviceType }) {
                   type,
                   roomId: targetRoom,
                   connectionType: connection,
-                  irProfileId: learned ? learnedProfile(type, brand).id : profile.id,
+                  irProfileId: recorded > 0 ? learnedProfile(type, brand).id : profile.id,
+                  irLibrary: recorded > 0 ? library : undefined,
                 })
                 replace({ name: 'category', type })
               }}
@@ -256,110 +249,24 @@ export function AddDeviceScreen({ initialType }: { initialType?: DeviceType }) {
         query={`${brand} ${categoryLabel(type)}`.trim()}
         onClose={() => setRequestOpen(false)}
       />
-      <BottomSheet open={otherOpen} title="Other ways" onClose={() => setOtherOpen(false)}>
-        <p className="mb-3 text-[13px] leading-relaxed text-[#8e8e93]">
-          Universal remotes try several signal maps until the {brand} {categoryLabel(type).toLowerCase()} reacts.
-        </p>
-        <Way
-          title="Try another remote"
-          body={`${profile.name} didn’t work? Switch to the next ${brand} layout.`}
-          onClick={tryNextCode}
-        />
-        {codes.map((item, i) => (
-          <Way
-            key={item.id}
-            title={item.name}
-            body={`${item.hint} · Set ${i + 1}`}
-            onClick={() => {
-              setProfileId(item.id)
-              setPowerOn(false)
-              setTestSpeed(0)
-              setTested(false)
-              setLearned(false)
-              setOtherOpen(false)
-            }}
-          />
-        ))}
-        <Way
-          title="Learn from original remote"
-          body="Capture Power and speeds from the remote that already works."
-          onClick={() => {
-            setOtherOpen(false)
-            setLearnOpen(true)
-            setLearning(false)
-          }}
-        />
-        <Way
-          title="Request this model"
-          body="We’ll add the exact remote map ASAP."
-          onClick={() => {
-            setOtherOpen(false)
-            setRequestOpen(true)
-          }}
-        />
-      </BottomSheet>
-      <BottomSheet open={learnOpen} title="Learn remote" onClose={() => setLearnOpen(false)}>
-        {learned && !learning ? (
-          <div className="pb-4 text-center">
-            <p className="text-[16px] font-medium">Buttons captured</p>
-            <p className="mt-2 text-[14px] leading-relaxed text-[#8e8e93]">
-              Remora saved this {brand} layout, including Off and speeds.
-            </p>
-            <Button
-              className="mt-5"
-              onClick={() => {
-                setLearnOpen(false)
-                setTested(true)
-                setStep(5)
-              }}
-            >
-              Continue
-            </Button>
-          </div>
-        ) : (
-          <div className="pb-3 text-center">
-            <p className="text-[14px] leading-relaxed text-[#8e8e93]">
-              Hold the original {brand} remote a few centimeters from the phone, then tap Learn and press Power on it.
-            </p>
-            <div className="my-6 flex justify-center">
-              <PowerButton on={learning || learned} onClick={() => undefined} />
-            </div>
-            <Button
-              disabled={learning}
-              onClick={() => {
-                setLearning(true)
-                window.setTimeout(() => {
-                  setLearning(false)
-                  setLearned(true)
-                  setProfileId(learnedProfile(type, brand).id)
-                  setTested(true)
-                }, 1400)
-              }}
-            >
-              {learning ? 'Listening…' : 'Learn Power'}
-            </Button>
-          </div>
-        )}
-      </BottomSheet>
+      <RecordRemoteSheet
+        open={recordOpen}
+        type={type}
+        brand={brand}
+        initial={library}
+        onClose={() => setRecordOpen(false)}
+        onSave={(next) => {
+          setLibrary(next)
+          setProfileId(learnedProfile(type, brand).id)
+          setTested(true)
+          setRecordOpen(false)
+        }}
+      />
     </div>
   )
 }
 
-function Way({ title, body, onClick }: { title: string; body: string; onClick: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="mb-2 w-full rounded-2xl bg-[#1c1c1e] px-4 py-3.5 text-left active:scale-[0.99]"
-    >
-      <span className="block text-[15px] font-medium">{title}</span>
-      <span className="mt-0.5 block text-[12px] text-[#8e8e93]">{body}</span>
-    </button>
-  )
-}
-
-function stepTitle(step: number, learnOpen?: boolean) {
-  if (learnOpen) return 'Learn Remote'
+function stepTitle(step: number) {
   if (step === 1) return 'Add Device'
   if (step === 2) return 'Choose Connection'
   if (step === 3) return 'Choose Brand'

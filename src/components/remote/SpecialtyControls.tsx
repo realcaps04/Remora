@@ -25,11 +25,13 @@ export function FanSpeedPad({
   speed,
   power,
   onPick,
+  onOn,
 }: {
   max: number
   speed: number
   power: boolean
   onPick: (n: number) => void
+  onOn?: () => void
 }) {
   const lastSpeed = useRef(Math.max(speed, 1))
   if (speed > 0) lastSpeed.current = speed
@@ -61,7 +63,7 @@ export function FanSpeedPad({
           type="button"
           aria-label="On"
           aria-pressed={power}
-          onClick={() => onPick(lastSpeed.current)}
+          onClick={() => (onOn ? onOn() : onPick(lastSpeed.current))}
           className={cn(
             'remote-btn mat focus-ring !h-12 !w-full !min-w-0 rounded-2xl text-[14px] font-medium',
             power && 'armed',

@@ -9,6 +9,7 @@ import { NumericPad } from '../components/remote/NumericPad'
 import { RemoteButton } from '../components/remote/RemoteButton'
 import { PowerButton } from '../components/remote/PowerButton'
 import { profileById } from '../data/irProfiles'
+import { recordedCount } from '../services/irLearner'
 import { useStore } from '../state/store'
 
 export function DeviceRemoteScreen({ deviceId }: { deviceId: string }) {
@@ -31,7 +32,11 @@ export function DeviceRemoteScreen({ deviceId }: { deviceId: string }) {
     <div className="page-scroll no-nav">
       <Header
         title={device.name}
-        subtitle={`${device.brand} · ${profileById(device.irProfileId, device.type, device.brand).name}`}
+        subtitle={
+          recordedCount(device.irLibrary) > 0
+            ? `${device.brand} · Recorded remote`
+            : `${device.brand} · ${profileById(device.irProfileId, device.type, device.brand).name}`
+        }
         onBack={back}
         trailing={
           <div className="flex items-center gap-1">
@@ -71,7 +76,7 @@ export function DeviceRemoteScreen({ deviceId }: { deviceId: string }) {
             onClick={() => setFixOpen(true)}
             className="w-full text-center text-[13px] text-[#8e8e93]"
           >
-            Not working? Try another remote
+            Not working? Record from original remote
           </button>
         </div>
       ) : null}

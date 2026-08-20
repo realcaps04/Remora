@@ -3,9 +3,9 @@ import { Header } from '../components/common/Header'
 import { Toggle } from '../components/common/Toggle'
 import { BottomSheet, PageContainer } from '../components/layout/Primitives'
 import { CONNECTION_OPTIONS, brandsFor, categoryLabel } from '../data/catalog'
-import { profilesFor, profileById } from '../data/irProfiles'
+import { profilesFor } from '../data/irProfiles'
 import { useStore } from '../state/store'
-import { FixCodesSheet } from '../components/devices/FixCodesSheet'
+import { FixCodesSheet, recordedLabel } from '../components/devices/FixCodesSheet'
 import type { ConnectionType } from '../types'
 
 export function DeviceSettingsScreen({ deviceId }: { deviceId: string }) {
@@ -37,8 +37,8 @@ export function DeviceSettingsScreen({ deviceId }: { deviceId: string }) {
           onClick={() => setSheet('connection')}
         />
         <Row
-          label="Remote layout"
-          value={profileById(device.irProfileId, device.type, device.brand).name}
+          label="Record remote"
+          value={recordedLabel(device)}
           onClick={() => setSheet('codes')}
         />
         <Row

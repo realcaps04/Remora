@@ -87,6 +87,18 @@ export type Room = {
   name: string
 }
 
+export type IrSignal = {
+  protocol: 'nec'
+  frequency: number
+  address: number
+  command: number
+  raw: number[]
+  key: string
+  capturedAt: number
+}
+
+export type IrLibrary = Record<string, IrSignal>
+
 export type Device = {
   id: string
   name: string
@@ -98,6 +110,7 @@ export type Device = {
   favorite: boolean
   lastUsedAt: number
   irProfileId?: string
+  irLibrary?: IrLibrary
   state: DeviceState
 }
 

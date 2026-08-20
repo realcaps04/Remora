@@ -28,7 +28,8 @@ export function FanRemote({
             max={profile.maxSpeed}
             speed={device.state.speed}
             power={running}
-            onPick={(n) => send('setSpeed', n)}
+            onPick={(n) => (n <= 0 ? send('powerOff') : send('setSpeed', n))}
+            onOn={() => send('powerOn')}
           />
         </div>
       ) : null}

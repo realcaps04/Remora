@@ -29,6 +29,7 @@ export function applyCommand(
       break
     case 'powerOn':
       state.power = true
+      if (state.speed < 1) state.speed = 1
       break
     case 'powerOff':
       state.power = false
