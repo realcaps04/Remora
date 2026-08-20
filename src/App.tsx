@@ -1,6 +1,8 @@
 import { BottomNavigation } from './components/common/BottomNavigation'
+import { InstallPopup } from './components/common/InstallPopup'
 import { UpdatePopup } from './components/common/UpdatePopup'
 import { useAppUpdate } from './lib/useAppUpdate'
+import { useInstallPrompt } from './lib/useInstallPrompt'
 import { useStore } from './state/store'
 import { SplashScreen } from './screens/SplashScreen'
 import { HomeScreen } from './screens/HomeScreen'
@@ -59,6 +61,7 @@ function Screen() {
 export default function App() {
   const { route, tab, goTab } = useStore()
   const { updateReady, reload, later } = useAppUpdate()
+  const install = useInstallPrompt()
   const hideNav = route.name === 'splash' || route.name === 'remote'
 
   return (
@@ -66,6 +69,12 @@ export default function App() {
       <Screen />
       {hideNav ? null : <BottomNavigation tab={tab} onChange={goTab} />}
       <UpdatePopup open={updateReady} onUpdate={() => void reload()} onLater={later} />
+      <InstallPopup
+        open={!updateReady && install.open}
+        mode={install.mode}
+        onInstall={() => void install.install()}
+        onLater={install.later}
+      />
     </div>
   )
 }

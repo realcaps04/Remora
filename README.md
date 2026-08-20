@@ -29,3 +29,5 @@ React, Vite, TypeScript, Tailwind CSS, Lucide React.
 Import this GitHub repo in Vercel. Framework is Vite, output is `dist`.
 
 Each new deployment writes a `version.json`. Open tabs detect it and show an **Update now** popup so users reload onto the latest build instead of a stale cache.
+
+Opened in a browser, Remora offers **Install app** (or iPhone Add to Home Screen) so it can run like a native remote.

@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { Header } from '../components/common/Header'
 import { Toggle } from '../components/common/Toggle'
 import { PageContainer } from '../components/layout/Primitives'
+import { askToInstall, isStandaloneApp } from '../lib/useInstallPrompt'
 import { useStore } from '../state/store'
 
 export function SettingsScreen() {
@@ -57,6 +58,14 @@ export function SettingsScreen() {
             <span>Sound Feedback</span>
             <Toggle checked={settings.sound} onChange={(on) => patchSettings({ sound: on })} label="Sound" />
           </div>
+        </Group>
+
+        <Group title="App">
+          {isStandaloneApp() ? (
+            <Row label="Install Remora" value="Installed" />
+          ) : (
+            <Row label="Install Remora" value="Add as app" onClick={() => askToInstall()} />
+          )}
         </Group>
 
         <Group title="Ask Remora">
