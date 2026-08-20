@@ -43,8 +43,8 @@ type Way = {
 }
 
 const FAN_WAYS: Way[] = [
+  { key: '5speed', name: '5-speed + Off', hint: 'Newer {brand} remotes, including BLDC', layout: 'fan-numbered', maxSpeed: 5, extras: ['timer'] },
   { key: '3speed', name: '3-speed + Off', hint: 'Most {brand} ceiling fans', layout: 'fan-numbered', maxSpeed: 3, extras: ['timer'] },
-  { key: '5speed', name: '5-speed + Off', hint: 'Newer {brand} remotes', layout: 'fan-numbered', maxSpeed: 5, extras: ['timer'] },
   { key: 'cycle', name: 'Speed + / −', hint: 'Rocker or cycle remote', layout: 'fan-cycle', maxSpeed: 5, extras: ['oscillation'] },
   { key: 'light', name: 'Fan + light', hint: 'Ceiling fan with lamp', layout: 'fan-light', maxSpeed: 3, extras: ['light', 'timer'] },
   { key: 'reverse', name: 'Timer + reverse', hint: 'Premium {brand} kits', layout: 'fan-numbered', maxSpeed: 3, extras: ['timer', 'reverse'] },
@@ -194,8 +194,8 @@ const SPECIAL: Record<string, Way[]> = {
     { key: 'general', name: 'O General split', hint: 'Fujitsu General IR', layout: 'ac-inverter', extras: ['turbo', 'swing', 'sleep'] },
   ],
   'Orient:fan': [
-    { key: 'electric', name: 'Orient Electric', hint: 'Standard Orient ceiling kit', layout: 'fan-numbered', maxSpeed: 3, extras: ['timer'] },
-    { key: 'bldc', name: 'Orient BLDC', hint: 'Energy-saving Orient remote', layout: 'fan-numbered', maxSpeed: 5, extras: ['timer', 'light'] },
+    { key: 'bldc', name: 'Orient BLDC', hint: '5-speed Off / 1–5 Orient BLDC remote', layout: 'fan-numbered', maxSpeed: 5, extras: ['timer', 'light', 'reverse', 'sleep'] },
+    { key: 'electric', name: 'Orient Electric', hint: 'Standard 3-speed Orient ceiling kit', layout: 'fan-numbered', maxSpeed: 3, extras: ['timer'] },
   ],
   'Atomberg:fan': [
     { key: 'app', name: 'Atomberg RF / app', hint: 'Mostly RF — IR rarely works', layout: 'fan-numbered', maxSpeed: 5, extras: ['timer', 'light'] },
@@ -204,10 +204,10 @@ const SPECIAL: Record<string, Way[]> = {
     { key: 'kit', name: 'Colorbot kit', hint: 'Aftermarket ceiling fan remote', layout: 'fan-numbered', maxSpeed: 3, extras: ['timer', 'light'] },
   ],
   'Havells:fan': [
-    { key: 'adonia', name: 'Havells Adonia / BLDC', hint: 'Havells premium remote', layout: 'fan-numbered', maxSpeed: 5, extras: ['timer', 'light'] },
+    { key: 'adonia', name: 'Havells Adonia / BLDC', hint: '5-speed Havells BLDC remote', layout: 'fan-numbered', maxSpeed: 5, extras: ['timer', 'light', 'sleep'] },
   ],
   'Crompton:fan': [
-    { key: 'energion', name: 'Crompton Energion', hint: 'BLDC Crompton remote', layout: 'fan-numbered', maxSpeed: 5, extras: ['timer'] },
+    { key: 'energion', name: 'Crompton Energion', hint: '5-speed Crompton BLDC remote', layout: 'fan-numbered', maxSpeed: 5, extras: ['timer', 'sleep'] },
   ],
 }
 
@@ -237,7 +237,7 @@ function waysFor(type: DeviceType, brand: string): Way[] {
   const extra = SPECIAL[`${brand}:${type}`] ?? []
   const seen = new Set<string>()
   const out: Way[] = []
-  for (const way of [...base, ...extra]) {
+  for (const way of [...extra, ...base]) {
     if (seen.has(way.key)) continue
     seen.add(way.key)
     out.push(way)

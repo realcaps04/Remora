@@ -88,6 +88,7 @@ export default function App() {
       <InstallPopup
         open={!updateReady && install.open}
         mode={install.mode}
+        canPrompt={install.canPrompt}
         onInstall={() => void install.install()}
         onLater={install.later}
       />

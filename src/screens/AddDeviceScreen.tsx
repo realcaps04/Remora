@@ -4,8 +4,9 @@ import { Header } from '../components/common/Header'
 import { Button } from '../components/common/Button'
 import { DeviceIcon } from '../components/devices/DeviceIcon'
 import { CATEGORIES, CONNECTION_OPTIONS, brandsFor, categoryLabel } from '../data/catalog'
-import { learnedProfile, nextProfile, profilesFor, profileById } from '../data/irProfiles'
+import { learnedProfile, nextProfile, profilesFor, profileById, isNumberedFan } from '../data/irProfiles'
 import { PowerButton } from '../components/remote/PowerButton'
+import { FanSpeedPad } from '../components/remote/SpecialtyControls'
 import { useStore } from '../state/store'
 import type { ConnectionType, DeviceType } from '../types'
 import { BottomSheet, PageContainer } from '../components/layout/Primitives'
@@ -23,6 +24,7 @@ export function AddDeviceScreen({ initialType }: { initialType?: DeviceType }) {
   const [newRoomName, setNewRoomName] = useState('Home')
   const [tested, setTested] = useState(false)
   const [powerOn, setPowerOn] = useState(false)
+  const [testSpeed, setTestSpeed] = useState(0)
   const [requestOpen, setRequestOpen] = useState(false)
   const [otherOpen, setOtherOpen] = useState(false)
   const [learnOpen, setLearnOpen] = useState(false)
@@ -44,6 +46,7 @@ export function AddDeviceScreen({ initialType }: { initialType?: DeviceType }) {
     setProfileId(profilesFor(type, brand)[0]?.id)
     setTested(false)
     setPowerOn(false)
+    setTestSpeed(0)
     setLearned(false)
   }, [type, brand])
 
@@ -51,6 +54,7 @@ export function AddDeviceScreen({ initialType }: { initialType?: DeviceType }) {
     const next = nextProfile(profile.id, type, brand)
     setProfileId(next.id)
     setPowerOn(false)
+    setTestSpeed(0)
     setTested(false)
     setLearned(false)
     setOtherOpen(false)
@@ -143,19 +147,36 @@ export function AddDeviceScreen({ initialType }: { initialType?: DeviceType }) {
         {step === 4 && (
           <div className="flex flex-col items-center pt-4 text-center">
             <p className="text-[15px] text-[#8e8e93]">
-              Point Remora at your {brand} {categoryLabel(type).toLowerCase()} and tap Power.
+              {isNumberedFan(profile.layout)
+                ? `Point Remora at your ${brand} fan and tap a speed (1–${profile.maxSpeed}).`
+                : `Point Remora at your ${brand} ${categoryLabel(type).toLowerCase()} and tap Power.`}
             </p>
             <p className="mt-2 max-w-[280px] text-[13px] leading-relaxed text-[#636366]">
-              If nothing happens, this may not be the right remote. Try another one.
+              {isNumberedFan(profile.layout)
+                ? 'BLDC remotes use Off and numbered speeds, not a single Power key. If a speed does nothing, try another remote.'
+                : 'If nothing happens, this may not be the right remote. Try another one.'}
             </p>
-            <div className="my-8">
-              <PowerButton
-                on={powerOn}
-                onClick={() => {
-                  setPowerOn((v) => !v)
-                  setTested(true)
-                }}
-              />
+            <div className="my-8 flex w-full justify-center">
+              {isNumberedFan(profile.layout) ? (
+                <FanSpeedPad
+                  max={profile.maxSpeed}
+                  speed={testSpeed}
+                  power={powerOn}
+                  onPick={(n) => {
+                    setTestSpeed(n)
+                    setPowerOn(n > 0)
+                    setTested(true)
+                  }}
+                />
+              ) : (
+                <PowerButton
+                  on={powerOn}
+                  onClick={() => {
+                    setPowerOn((v) => !v)
+                    setTested(true)
+                  }}
+                />
+              )}
             </div>
             <div className="mb-5 rounded-full bg-white/8 px-3 py-1 text-[12px] tracking-wide text-[#8e8e93]">
               {learned ? 'Learned remote' : `Remote ${codeIndex + 1} of ${codes.length} · ${profile.name}`}
@@ -252,6 +273,7 @@ export function AddDeviceScreen({ initialType }: { initialType?: DeviceType }) {
             onClick={() => {
               setProfileId(item.id)
               setPowerOn(false)
+              setTestSpeed(0)
               setTested(false)
               setLearned(false)
               setOtherOpen(false)

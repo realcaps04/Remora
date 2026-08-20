@@ -273,10 +273,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         lastUsedAt: Date.now(),
         status: device.status === 'offline' ? 'offline' : 'connecting',
       }
+      const pending = dispatchHardware(next, command, payload)
       dispatch({ type: 'setDevice', device: next })
-      const result = await dispatchHardware(next, command, payload)
-      next.status = result.ok ? 'connected' : device.status
-      dispatch({ type: 'setDevice', device: next })
+      const result = await pending
+      dispatch({
+        type: 'setDevice',
+        device: { ...next, status: result.ok ? 'connected' : device.status },
+      })
       if (result.ok) {
         dispatch({
           type: 'addActivity',

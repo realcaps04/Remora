@@ -3,11 +3,12 @@ import { Header } from '../components/common/Header'
 import { Toggle } from '../components/common/Toggle'
 import { PageContainer } from '../components/layout/Primitives'
 import { Wordmark } from '../components/common/Wordmark'
-import { askToInstall, isStandaloneApp } from '../lib/useInstallPrompt'
+import { useInstallPrompt } from '../lib/useInstallPrompt'
 import { useStore } from '../state/store'
 
 export function SettingsScreen() {
   const { settings, patchSettings, devices, push } = useStore()
+  const { installed, canPrompt, request } = useInstallPrompt()
   const defaultName = devices.find((d) => d.id === settings.defaultRemote)?.name ?? 'None'
 
   return (
@@ -62,10 +63,14 @@ export function SettingsScreen() {
         </Group>
 
         <Group title="App">
-          {isStandaloneApp() ? (
+          {installed ? (
             <Row label="Install Remora" value="Installed" />
           ) : (
-            <Row label="Install Remora" value="Add as app" onClick={() => askToInstall()} />
+            <Row
+              label="Install Remora"
+              value={canPrompt ? 'Ready' : 'Add as app'}
+              onClick={() => void request()}
+            />
           )}
         </Group>
 

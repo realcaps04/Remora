@@ -10,11 +10,11 @@ export async function sendCommand(
   command: string,
   payload?: CommandPayload,
 ): Promise<CommandResult> {
-  await wait(90 + Math.random() * 80)
   if (device.status === 'offline' || device.status === 'disconnected') {
     return { ok: false, message: 'Device is not reachable' }
   }
   applyCommand(device.state, command, payload)
+  await wait(90 + Math.random() * 80)
   return { ok: true }
 }
 

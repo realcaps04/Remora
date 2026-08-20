@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { cn } from '../../lib/cn'
 
 export function ChannelControl({
   onUp,
@@ -14,6 +15,56 @@ export function ChannelControl({
       </button>
       <button type="button" className="focus-ring text-[13px] font-medium tracking-wide" aria-label="Channel down" onClick={onDown}>
         CH−
+      </button>
+    </div>
+  )
+}
+
+export function FanSpeedPad({
+  max,
+  speed,
+  power,
+  onPick,
+}: {
+  max: number
+  speed: number
+  power: boolean
+  onPick: (n: number) => void
+}) {
+  const cols = max >= 5 ? 'grid-cols-5' : max === 4 ? 'grid-cols-4' : 'grid-cols-3'
+  return (
+    <div className="w-full max-w-[320px]" role="group" aria-label="Fan speed">
+      <div className={cn('grid gap-2', cols)}>
+        {Array.from({ length: max }, (_, i) => {
+          const n = i + 1
+          return (
+            <button
+              key={n}
+              type="button"
+              aria-label={`Speed ${n}`}
+              aria-pressed={power && speed === n}
+              onClick={() => onPick(n)}
+              className={cn(
+                'remote-btn mat focus-ring !h-14 !w-full !min-w-0 rounded-2xl text-[17px] font-medium',
+                power && speed === n && 'armed',
+              )}
+            >
+              {n}
+            </button>
+          )
+        })}
+      </div>
+      <button
+        type="button"
+        aria-label="Off"
+        aria-pressed={!power}
+        onClick={() => onPick(0)}
+        className={cn(
+          'remote-btn mat focus-ring mt-2.5 !h-12 !w-full !min-w-0 rounded-2xl text-[14px] font-medium',
+          !power && 'armed',
+        )}
+      >
+        Off
       </button>
     </div>
   )

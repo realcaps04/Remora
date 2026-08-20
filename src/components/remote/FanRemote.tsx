@@ -1,7 +1,7 @@
-import { Lightbulb, Power, RefreshCw, Timer, Wind } from 'lucide-react'
+import { Lightbulb, Moon, Power, RefreshCw, Timer, Wind } from 'lucide-react'
 import type { Device } from '../../types'
 import { isNumberedFan, profileById } from '../../data/irProfiles'
-import { Dial, FanSpeedControl } from './SpecialtyControls'
+import { Dial, FanSpeedControl, FanSpeedPad } from './SpecialtyControls'
 import { RemoteButton } from './RemoteButton'
 
 export function FanRemote({
@@ -15,7 +15,7 @@ export function FanRemote({
   const running = device.state.power
   const numbered = isNumberedFan(profile.layout)
   const hint = running
-    ? `${profile.name} · ${device.state.oscillation ? 'Reverse / swing on' : 'Running'}`
+    ? `${profile.name} · Speed ${device.state.speed}`
     : profile.hint
 
   return (
@@ -23,29 +23,13 @@ export function FanRemote({
       <Dial label="Fan speed" value={running ? device.state.speed : 'Off'} hint={hint} />
 
       {numbered ? (
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-2.5">
-          <RemoteButton
-            size="sm"
-            aria-label="Off"
-            active={!running}
-            onClick={() => send('setSpeed', 0)}
-          >
-            Off
-          </RemoteButton>
-          {Array.from({ length: profile.maxSpeed }, (_, i) => {
-            const n = i + 1
-            return (
-              <RemoteButton
-                key={n}
-                size="sm"
-                aria-label={`Speed ${n}`}
-                active={running && device.state.speed === n}
-                onClick={() => send('setSpeed', n)}
-              >
-                {n}
-              </RemoteButton>
-            )
-          })}
+        <div className="mt-8 flex w-full justify-center">
+          <FanSpeedPad
+            max={profile.maxSpeed}
+            speed={device.state.speed}
+            power={running}
+            onPick={(n) => send('setSpeed', n)}
+          />
         </div>
       ) : null}
 
@@ -79,6 +63,11 @@ export function FanRemote({
               <Wind size={20} strokeWidth={1.6} />
             </RemoteButton>
           )}
+          {profile.extras.includes('sleep') ? (
+            <RemoteButton aria-label="Sleep" onClick={() => send('sleep')} active={device.state.sleep}>
+              <Moon size={20} strokeWidth={1.6} />
+            </RemoteButton>
+          ) : null}
           {numbered ? null : <FanSpeedControl onUp={() => send('speedUp')} onDown={() => send('speedDown')} />}
         </div>
       </div>
