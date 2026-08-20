@@ -1,4 +1,5 @@
 import type { CommandPayload, IrLibrary, IrSignal } from '../types'
+import { startIrCamera, waitForIrBurst } from './irCamera'
 
 const CARRIER = 38000
 
@@ -11,20 +12,22 @@ function hash32(value: string) {
   return h >>> 0
 }
 
-function encodeNec(address: number, command: number) {
-  const bits: number[] = []
-  const pushByte = (value: number) => {
-    for (let i = 0; i < 8; i += 1) {
-      bits.push(560)
-      bits.push((value >> i) & 1 ? 1690 : 560)
+function envelopeToPulses(burst: number[], baseline: number) {
+  const threshold = baseline + Math.max(12, baseline * 0.15)
+  const pulses: number[] = []
+  let high = burst[0] >= threshold
+  let run = 1
+  for (let i = 1; i < burst.length; i += 1) {
+    const nextHigh = burst[i] >= threshold
+    if (nextHigh === high) {
+      run += 1
+      continue
     }
+    pulses.push(Math.max(200, run * 16000))
+    high = nextHigh
+    run = 1
   }
-  const pulses = [9000, 4500]
-  pushByte(address & 0xff)
-  pushByte((address >> 8) & 0xff)
-  pushByte(command & 0xff)
-  pushByte(~command & 0xff)
-  pulses.push(...bits, 560)
+  pulses.push(Math.max(200, run * 16000))
   return pulses
 }
 
@@ -43,24 +46,24 @@ export function libraryKeyFor(command: string, payload?: CommandPayload) {
   return command
 }
 
-export async function captureIr(key: string): Promise<IrSignal> {
-  await wait(850 + Math.random() * 350)
-  const seed = `${key}:${performance.now()}:${Math.random().toString(36).slice(2)}`
-  const address = hash32(key) & 0xffff
-  const command = hash32(seed) & 0xff
+export async function captureIr(key: string, abort?: AbortSignal): Promise<IrSignal> {
+  await startIrCamera()
+  const result = await waitForIrBurst(8000, abort)
+  const fingerprint = result.burst.map((v) => Math.round(v)).join(',')
   return {
-    protocol: 'nec',
+    protocol: 'camera',
     frequency: CARRIER,
-    address,
-    command,
-    raw: encodeNec(address, command),
+    address: hash32(key) & 0xffff,
+    command: hash32(`${key}:${fingerprint}`) & 0xff,
+    raw: envelopeToPulses(result.burst, result.baseline),
+    samples: result.burst.map((v) => Math.round(v)),
     key,
     capturedAt: Date.now(),
   }
 }
 
 export async function transmitIr(signal: IrSignal) {
-  await wait(55 + Math.min(40, Math.floor(signal.raw.length / 8)))
+  await wait(Math.min(180, 40 + signal.raw.length))
   return true
 }
 

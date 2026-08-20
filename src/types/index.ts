@@ -88,11 +88,12 @@ export type Room = {
 }
 
 export type IrSignal = {
-  protocol: 'nec'
+  protocol: 'camera' | 'nec'
   frequency: number
   address: number
   command: number
   raw: number[]
+  samples?: number[]
   key: string
   capturedAt: number
 }
