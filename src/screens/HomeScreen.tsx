@@ -3,10 +3,14 @@ import { Wordmark } from '../components/common/Wordmark'
 import { DeviceIcon } from '../components/devices/DeviceIcon'
 import { DeviceStatusBadge } from '../components/devices/DeviceStatus'
 import { CategoryTile, RoomCard } from '../components/devices/DeviceCard'
+import { PageContainer, SectionHeader } from '../components/layout/Primitives'
 import { CATEGORIES, categoryLabel } from '../data/catalog'
 import { greeting, relativeTime } from '../lib/format'
 import { useStore } from '../state/store'
-import { PageContainer, SectionHeader } from '../components/layout/Primitives'
+
+const HOME_CATEGORIES = CATEGORIES.filter((c) =>
+  ['tv', 'fan', 'ac', 'dth', 'light'].includes(c.type),
+)
 
 export function HomeScreen() {
   const { devices, rooms, devicesInRoom, devicesOfType, roomById, send, push } = useStore()
@@ -18,9 +22,9 @@ export function HomeScreen() {
       <PageContainer className="pt-[max(28px,calc(env(safe-area-inset-top)+12px))]">
         <div className="flex items-start justify-between">
           <div>
-            <div className="relative mb-1 w-fit pb-3 pr-0.5">
-              <Wordmark className="text-[18px] text-white" />
-              <p className="absolute right-0 top-[calc(100%-2px)] text-[9px] leading-none tracking-wide text-[#8e8e93]">
+            <div className="relative mb-1 w-fit pb-2 pr-0.5">
+              <Wordmark className="block text-[18px] leading-none text-white" />
+              <p className="absolute right-0 top-[calc(100%-9px)] text-[9px] leading-none tracking-wide text-[#8e8e93]">
                 by Caps
               </p>
             </div>
@@ -43,7 +47,7 @@ export function HomeScreen() {
           <SectionHeader title={quick.length === 0 ? 'Categories' : 'Quick Controls'} />
           {quick.length === 0 ? (
             <div className="grid grid-cols-2 gap-2.5">
-              {CATEGORIES.slice(0, 5).map((cat) => (
+              {HOME_CATEGORIES.map((cat) => (
                 <CategoryTile
                   key={cat.type}
                   label={cat.label}

@@ -114,8 +114,11 @@ export type Scene = {
   favorite: boolean
 }
 
+export type FeedbackKind = 'feature' | 'product' | 'missing' | 'issue'
+
 export type ProductRequest = {
   id: string
+  kind: FeedbackKind
   productType: string
   brand: string
   model: string
@@ -166,4 +169,4 @@ export type Route =
   | { name: 'ask' }
   | { name: 'search' }
 
-export type Tab = 'home' | 'devices' | 'activity' | 'settings'
+export type Tab = 'home' | 'devices' | 'settings'

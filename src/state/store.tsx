@@ -16,6 +16,7 @@ import type {
   ConnectionType,
   Device,
   DeviceType,
+  FeedbackKind,
   ProductRequest,
   QuickAction,
   Room,
@@ -100,9 +101,7 @@ function reducer(state: State, action: Action): State {
           ? { name: 'home' }
           : action.tab === 'devices'
             ? { name: 'devices' }
-            : action.tab === 'activity'
-              ? { name: 'activity' }
-              : { name: 'settings' }
+            : { name: 'settings' }
       return { ...state, stack: [route] }
     }
     case 'patchDevice':
@@ -201,9 +200,10 @@ type StoreValue = State & {
   patchSettings: (patch: Partial<Settings>) => void
   setSearch: (query: string) => void
   requestProduct: (input: {
+    kind?: FeedbackKind
     productType: string
-    brand: string
-    model: string
+    brand?: string
+    model?: string
     details: string
   }) => void
 }
@@ -211,7 +211,6 @@ type StoreValue = State & {
 const StoreContext = createContext<StoreValue | null>(null)
 
 function tabFromRoute(route: Route): Tab {
-  if (route.name === 'activity') return 'activity'
   if (route.name === 'settings' || route.name === 'ask' || route.name === 'scenes') return 'settings'
   if (
     route.name === 'devices' ||
@@ -226,6 +225,14 @@ function tabFromRoute(route: Route): Tab {
   )
     return 'devices'
   return 'home'
+}
+
+function requestActivityMessage(request: ProductRequest) {
+  const name = request.productType || 'something'
+  if (request.kind === 'feature') return `Requested feature “${name}”`
+  if (request.kind === 'missing') return `Reported missing “${name}”`
+  if (request.kind === 'issue') return `Reported issue: ${name}`
+  return `Requested ${name} ASAP`
 }
 
 export function StoreProvider({ children }: { children: ReactNode }) {
@@ -385,12 +392,20 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const requestProduct = useCallback(
-    (input: { productType: string; brand: string; model: string; details: string }) => {
+    (input: {
+      kind?: FeedbackKind
+      productType: string
+      brand?: string
+      model?: string
+      details: string
+    }) => {
+      const kind = input.kind ?? 'product'
       const request: ProductRequest = {
         id: crypto.randomUUID(),
+        kind,
         productType: input.productType.trim(),
-        brand: input.brand.trim(),
-        model: input.model.trim(),
+        brand: (input.brand ?? '').trim(),
+        model: (input.model ?? '').trim(),
         details: input.details.trim(),
         asap: true,
         timestamp: Date.now(),
@@ -400,7 +415,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         type: 'addActivity',
         event: {
           id: crypto.randomUUID(),
-          message: `Requested ${request.productType || 'a product'} ASAP`,
+          message: requestActivityMessage(request),
           timestamp: Date.now(),
         },
       })

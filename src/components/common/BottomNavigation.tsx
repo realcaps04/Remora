@@ -1,22 +1,32 @@
-import { Clock3, House, LayoutGrid, Settings } from 'lucide-react'
+import { House, LayoutGrid, MessageSquarePlus, Settings } from 'lucide-react'
 import type { Tab } from '../../types'
 import { cn } from '../../lib/cn'
 
-const ITEMS: { id: Tab; label: string; Icon: typeof House }[] = [
-  { id: 'home', label: 'Home', Icon: House },
-  { id: 'devices', label: 'Devices', Icon: LayoutGrid },
-  { id: 'activity', label: 'Activity', Icon: Clock3 },
-  { id: 'settings', label: 'Settings', Icon: Settings },
+const ITEMS = [
+  { id: 'home' as const, label: 'Home', Icon: House, kind: 'tab' as const },
+  { id: 'devices' as const, label: 'Devices', Icon: LayoutGrid, kind: 'tab' as const },
+  { id: 'request' as const, label: 'Request', Icon: MessageSquarePlus, kind: 'action' as const },
+  { id: 'settings' as const, label: 'Settings', Icon: Settings, kind: 'tab' as const },
 ]
+
+const TAB_INDEX: Record<Tab, number> = {
+  home: 0,
+  devices: 1,
+  settings: 3,
+}
 
 export function BottomNavigation({
   tab,
+  requestOpen,
   onChange,
+  onRequest,
 }: {
   tab: Tab
+  requestOpen?: boolean
   onChange: (tab: Tab) => void
+  onRequest: () => void
 }) {
-  const activeIndex = Math.max(0, ITEMS.findIndex((item) => item.id === tab))
+  const activeIndex = requestOpen ? 2 : TAB_INDEX[tab]
 
   return (
     <nav
@@ -30,21 +40,22 @@ export function BottomNavigation({
           className="nav-indicator pointer-events-none absolute top-1.5 bottom-1.5 left-1.5"
           style={{ transform: `translateX(${activeIndex * 100}%)` }}
         />
-        {ITEMS.map(({ id, label, Icon }) => {
-          const active = tab === id
+        {ITEMS.map((item) => {
+          const active = item.kind === 'tab' ? tab === item.id && !requestOpen : Boolean(requestOpen)
           return (
-            <li key={id} className="relative z-[1]">
+            <li key={item.id} className="relative z-[1]">
               <button
                 type="button"
-                onClick={() => onChange(id)}
+                onClick={() => (item.kind === 'action' ? onRequest() : onChange(item.id))}
                 className={cn(
                   'focus-ring nav-tab mx-auto flex w-full flex-col items-center gap-0.5 rounded-2xl py-1.5 text-[10px] tracking-wide',
                   active ? 'is-active text-white' : 'text-[#8e8e93]',
                 )}
-                aria-current={active ? 'page' : undefined}
+                aria-current={item.kind === 'tab' && active ? 'page' : undefined}
+                aria-expanded={item.kind === 'action' ? requestOpen : undefined}
               >
-                <Icon size={22} strokeWidth={active ? 1.9 : 1.6} />
-                {label}
+                <item.Icon size={22} strokeWidth={active ? 1.9 : 1.6} />
+                {item.label}
               </button>
             </li>
           )

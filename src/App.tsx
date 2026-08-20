@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import { BottomNavigation } from './components/common/BottomNavigation'
 import { InstallPopup } from './components/common/InstallPopup'
+import { RequestHubSheet } from './components/common/RequestHubSheet'
 import { UpdatePopup } from './components/common/UpdatePopup'
 import { useAppUpdate } from './lib/useAppUpdate'
 import { useInstallPrompt } from './lib/useInstallPrompt'
@@ -62,6 +64,7 @@ export default function App() {
   const { route, tab, goTab } = useStore()
   const { updateReady, reload, later } = useAppUpdate()
   const install = useInstallPrompt()
+  const [requestOpen, setRequestOpen] = useState(false)
   const hideNav = route.name === 'splash' || route.name === 'remote'
 
   return (
@@ -69,7 +72,18 @@ export default function App() {
       <div key={tab} className="page-switch flex min-h-0 flex-1 flex-col overflow-hidden">
         <Screen />
       </div>
-      {hideNav ? null : <BottomNavigation tab={tab} onChange={goTab} />}
+      {hideNav ? null : (
+        <BottomNavigation
+          tab={tab}
+          requestOpen={requestOpen}
+          onChange={(next) => {
+            setRequestOpen(false)
+            goTab(next)
+          }}
+          onRequest={() => setRequestOpen((open) => !open)}
+        />
+      )}
+      <RequestHubSheet open={requestOpen} onClose={() => setRequestOpen(false)} />
       <UpdatePopup open={updateReady} onUpdate={() => void reload()} onLater={later} />
       <InstallPopup
         open={!updateReady && install.open}
