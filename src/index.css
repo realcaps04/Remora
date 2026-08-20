@@ -128,7 +128,7 @@ button {
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
-  padding-bottom: calc(108px + env(safe-area-inset-bottom));
+  padding-bottom: calc(124px + env(safe-area-inset-bottom));
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
@@ -408,13 +408,45 @@ button {
 
 .nav-frost {
   border-radius: 28px;
-  background: rgba(18, 18, 20, 0.52);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow:
-    0 18px 50px rgba(0, 0, 0, 0.45),
-    0 1px 0 rgba(255, 255, 255, 0.14) inset;
-  backdrop-filter: blur(28px) saturate(1.7);
-  -webkit-backdrop-filter: blur(28px) saturate(1.7);
+    0 18px 50px rgba(0, 0, 0, 0.55),
+    0 1px 0 rgba(255, 255, 255, 0.08) inset;
+  backdrop-filter: blur(32px) saturate(1.4);
+  -webkit-backdrop-filter: blur(32px) saturate(1.4);
+}
+
+.nav-indicator {
+  width: calc((100% - 12px) / 4);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.1);
+  transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.nav-tab {
+  transition:
+    color 220ms ease,
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.nav-tab.is-active {
+  transform: translateY(-1px);
+}
+
+.page-switch {
+  animation: page-switch 280ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes page-switch {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .fade-in {

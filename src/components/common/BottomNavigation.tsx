@@ -16,23 +16,30 @@ export function BottomNavigation({
   tab: Tab
   onChange: (tab: Tab) => void
 }) {
+  const activeIndex = Math.max(0, ITEMS.findIndex((item) => item.id === tab))
+
   return (
     <nav
       className="pointer-events-none absolute inset-x-0 bottom-0 z-30 px-3"
-      style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}
+      style={{ paddingBottom: 'max(28px, calc(env(safe-area-inset-bottom) + 18px))' }}
       aria-label="Primary"
     >
-      <ul className="nav-frost pointer-events-auto flex items-center justify-between px-1.5 py-1.5">
+      <ul className="nav-frost pointer-events-auto relative grid grid-cols-4 px-1.5 py-1.5">
+        <li
+          aria-hidden
+          className="nav-indicator pointer-events-none absolute top-1.5 bottom-1.5 left-1.5"
+          style={{ transform: `translateX(${activeIndex * 100}%)` }}
+        />
         {ITEMS.map(({ id, label, Icon }) => {
           const active = tab === id
           return (
-            <li key={id} className="flex-1">
+            <li key={id} className="relative z-[1]">
               <button
                 type="button"
                 onClick={() => onChange(id)}
                 className={cn(
-                  'focus-ring mx-auto flex w-full flex-col items-center gap-0.5 rounded-2xl py-1.5 text-[10px] tracking-wide transition-colors',
-                  active ? 'bg-white/10 text-white' : 'text-[#8e8e93]',
+                  'focus-ring nav-tab mx-auto flex w-full flex-col items-center gap-0.5 rounded-2xl py-1.5 text-[10px] tracking-wide',
+                  active ? 'is-active text-white' : 'text-[#8e8e93]',
                 )}
                 aria-current={active ? 'page' : undefined}
               >

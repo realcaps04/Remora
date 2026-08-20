@@ -66,7 +66,9 @@ export default function App() {
 
   return (
     <div className="app-frame">
-      <Screen />
+      <div key={tab} className="page-switch flex min-h-0 flex-1 flex-col overflow-hidden">
+        <Screen />
+      </div>
       {hideNav ? null : <BottomNavigation tab={tab} onChange={goTab} />}
       <UpdatePopup open={updateReady} onUpdate={() => void reload()} onLater={later} />
       <InstallPopup

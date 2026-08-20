@@ -16,6 +16,7 @@ import type {
   ConnectionType,
   Device,
   DeviceType,
+  ProductRequest,
   QuickAction,
   Room,
   Route,
@@ -38,6 +39,7 @@ type State = {
   scenes: Scene[]
   activity: ActivityEvent[]
   quickActions: QuickAction[]
+  requests: ProductRequest[]
   settings: Settings
   executingSceneId: string | null
   searchQuery: string
@@ -58,6 +60,7 @@ type Action =
   | { type: 'toggleSceneFavorite'; id: string }
   | { type: 'toggleQuickFavorite'; id: string }
   | { type: 'addActivity'; event: ActivityEvent }
+  | { type: 'addRequest'; request: ProductRequest }
   | { type: 'setExecutingScene'; id: string | null }
   | { type: 'patchSettings'; patch: Partial<Settings> }
   | { type: 'setSearch'; query: string }
@@ -69,6 +72,7 @@ const initial: State = {
   scenes: seedScenes,
   activity: seedActivity,
   quickActions: seedQuick,
+  requests: [],
   executingSceneId: null,
   searchQuery: '',
   settings: {
@@ -153,6 +157,8 @@ function reducer(state: State, action: Action): State {
       }
     case 'addActivity':
       return { ...state, activity: [action.event, ...state.activity] }
+    case 'addRequest':
+      return { ...state, requests: [action.request, ...state.requests] }
     case 'setExecutingScene':
       return { ...state, executingSceneId: action.id }
     case 'patchSettings':
@@ -194,6 +200,12 @@ type StoreValue = State & {
   toggleQuickFavorite: (id: string) => void
   patchSettings: (patch: Partial<Settings>) => void
   setSearch: (query: string) => void
+  requestProduct: (input: {
+    productType: string
+    brand: string
+    model: string
+    details: string
+  }) => void
 }
 
 const StoreContext = createContext<StoreValue | null>(null)
@@ -372,6 +384,30 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'setSearch', query })
   }, [])
 
+  const requestProduct = useCallback(
+    (input: { productType: string; brand: string; model: string; details: string }) => {
+      const request: ProductRequest = {
+        id: crypto.randomUUID(),
+        productType: input.productType.trim(),
+        brand: input.brand.trim(),
+        model: input.model.trim(),
+        details: input.details.trim(),
+        asap: true,
+        timestamp: Date.now(),
+      }
+      dispatch({ type: 'addRequest', request })
+      dispatch({
+        type: 'addActivity',
+        event: {
+          id: crypto.randomUUID(),
+          message: `Requested ${request.productType || 'a product'} ASAP`,
+          timestamp: Date.now(),
+        },
+      })
+    },
+    [],
+  )
+
   const value = useMemo<StoreValue>(
     () => ({
       ...state,
@@ -398,6 +434,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       toggleQuickFavorite,
       patchSettings,
       setSearch,
+      requestProduct,
     }),
     [
       state,
@@ -423,6 +460,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       toggleQuickFavorite,
       patchSettings,
       setSearch,
+      requestProduct,
     ],
   )
 

@@ -114,6 +114,16 @@ export type Scene = {
   favorite: boolean
 }
 
+export type ProductRequest = {
+  id: string
+  productType: string
+  brand: string
+  model: string
+  details: string
+  asap: boolean
+  timestamp: number
+}
+
 export type ActivityEvent = {
   id: string
   deviceId?: string

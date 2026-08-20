@@ -8,6 +8,7 @@ import { PowerButton } from '../components/remote/PowerButton'
 import { useStore } from '../state/store'
 import type { ConnectionType, DeviceType } from '../types'
 import { PageContainer } from '../components/layout/Primitives'
+import { RequestProductCard, RequestProductSheet } from '../components/common/RequestProductSheet'
 
 export function AddDeviceScreen({ initialType }: { initialType?: DeviceType }) {
   const { rooms, addDevice, addRoom, back, replace } = useStore()
@@ -21,6 +22,7 @@ export function AddDeviceScreen({ initialType }: { initialType?: DeviceType }) {
   const [newRoomName, setNewRoomName] = useState('Home')
   const [tested, setTested] = useState(false)
   const [powerOn, setPowerOn] = useState(false)
+  const [requestOpen, setRequestOpen] = useState(false)
 
   const brands = useMemo(
     () => brandsFor(type).filter((b) => b.toLowerCase().includes(query.toLowerCase())),
@@ -103,6 +105,9 @@ export function AddDeviceScreen({ initialType }: { initialType?: DeviceType }) {
                 </button>
               ))}
             </div>
+            {query.trim() && brands.length === 0 ? (
+              <RequestProductCard query={query.trim()} onClick={() => setRequestOpen(true)} />
+            ) : null}
           </>
         )}
 
@@ -175,6 +180,11 @@ export function AddDeviceScreen({ initialType }: { initialType?: DeviceType }) {
           </div>
         )}
       </PageContainer>
+      <RequestProductSheet
+        open={requestOpen}
+        query={query.trim() || categoryLabel(type)}
+        onClose={() => setRequestOpen(false)}
+      />
     </div>
   )
 }
