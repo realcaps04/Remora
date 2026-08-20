@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useRef, type ReactNode } from 'react'
 import { cn } from '../../lib/cn'
 
 export function ChannelControl({
@@ -31,6 +31,8 @@ export function FanSpeedPad({
   power: boolean
   onPick: (n: number) => void
 }) {
+  const lastSpeed = useRef(Math.max(speed, 1))
+  if (speed > 0) lastSpeed.current = speed
   const cols = max >= 5 ? 'grid-cols-5' : max === 4 ? 'grid-cols-4' : 'grid-cols-3'
   return (
     <div className="w-full max-w-[320px]" role="group" aria-label="Fan speed">
@@ -54,18 +56,32 @@ export function FanSpeedPad({
           )
         })}
       </div>
-      <button
-        type="button"
-        aria-label="Off"
-        aria-pressed={!power}
-        onClick={() => onPick(0)}
-        className={cn(
-          'remote-btn mat focus-ring mt-2.5 !h-12 !w-full !min-w-0 rounded-2xl text-[14px] font-medium',
-          !power && 'armed',
-        )}
-      >
-        Off
-      </button>
+      <div className="mt-2.5 grid grid-cols-2 gap-2">
+        <button
+          type="button"
+          aria-label="On"
+          aria-pressed={power}
+          onClick={() => onPick(lastSpeed.current)}
+          className={cn(
+            'remote-btn mat focus-ring !h-12 !w-full !min-w-0 rounded-2xl text-[14px] font-medium',
+            power && 'armed',
+          )}
+        >
+          On
+        </button>
+        <button
+          type="button"
+          aria-label="Off"
+          aria-pressed={!power}
+          onClick={() => onPick(0)}
+          className={cn(
+            'remote-btn mat focus-ring !h-12 !w-full !min-w-0 rounded-2xl text-[14px] font-medium',
+            !power && 'armed',
+          )}
+        >
+          Off
+        </button>
+      </div>
     </div>
   )
 }

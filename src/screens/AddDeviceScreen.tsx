@@ -148,12 +148,12 @@ export function AddDeviceScreen({ initialType }: { initialType?: DeviceType }) {
           <div className="flex flex-col items-center pt-4 text-center">
             <p className="text-[15px] text-[#8e8e93]">
               {isNumberedFan(profile.layout)
-                ? `Point Remora at your ${brand} fan and tap a speed (1–${profile.maxSpeed}).`
+                ? `Point Remora at your ${brand} fan and tap On, Off, or a speed.`
                 : `Point Remora at your ${brand} ${categoryLabel(type).toLowerCase()} and tap Power.`}
             </p>
             <p className="mt-2 max-w-[280px] text-[13px] leading-relaxed text-[#636366]">
               {isNumberedFan(profile.layout)
-                ? 'BLDC remotes use Off and numbered speeds, not a single Power key. If a speed does nothing, try another remote.'
+                ? 'BLDC remotes use On, Off, and numbered speeds. If a speed does nothing, try another remote.'
                 : 'If nothing happens, this may not be the right remote. Try another one.'}
             </p>
             <div className="my-8 flex w-full justify-center">
