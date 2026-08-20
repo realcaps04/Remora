@@ -1,5 +1,6 @@
 import { ChevronLeft, CirclePlay, Radio, VolumeX } from 'lucide-react'
 import type { Device } from '../../types'
+import { profileById } from '../../data/irProfiles'
 import { ChannelControl } from './SpecialtyControls'
 import { RemoteButton } from './RemoteButton'
 import { RemotePad } from './RemotePad'
@@ -11,8 +12,10 @@ export function DTHRemote({
   device: Device
   send: (command: string) => void
 }) {
+  const profile = profileById(device.irProfileId, device.type, device.brand)
   return (
     <div className="flex flex-col items-center px-6 pt-1 pb-8">
+      <p className="mb-4 text-[11px] tracking-wide text-[#636366]">{profile.name}</p>
       <RemotePad onDir={(dir) => send(dir)} onOk={() => send('ok')} />
 
       <div className="mt-10 flex items-start gap-14">

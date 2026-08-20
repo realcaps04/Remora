@@ -37,7 +37,7 @@ export function DeviceSettingsScreen({ deviceId }: { deviceId: string }) {
           onClick={() => setSheet('connection')}
         />
         <Row
-          label="Remote codes"
+          label="Remote layout"
           value={profileById(device.irProfileId, device.type, device.brand).name}
           onClick={() => setSheet('codes')}
         />

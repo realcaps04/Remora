@@ -29,16 +29,16 @@ export function FixCodesSheet({
     <>
       <BottomSheet open={open && !requestOpen} title="Make it work" onClose={onClose}>
         <p className="mb-3 text-[13px] leading-relaxed text-[#8e8e93]">
-          Now using {current.name}. If this {device.brand} {categoryLabel(device.type).toLowerCase()} doesn’t react, pick another
-          code set or learn the original remote.
+          Now using {current.name}. If this {device.brand} {categoryLabel(device.type).toLowerCase()} doesn’t react, try another
+          remote or learn from the original.
         </p>
         <button
           type="button"
           className="mb-2 w-full rounded-2xl bg-[#1c1c1e] px-4 py-3.5 text-left"
           onClick={() => apply(nextProfile(device.irProfileId, device.type, device.brand).id)}
         >
-          <span className="block text-[15px] font-medium">Try next code</span>
-          <span className="mt-0.5 block text-[12px] text-[#8e8e93]">Cycle to the next {device.brand} signal map</span>
+          <span className="block text-[15px] font-medium">Try another remote</span>
+          <span className="mt-0.5 block text-[12px] text-[#8e8e93]">Switch to the next {device.brand} layout</span>
         </button>
         {codes.map((item, i) => (
           <button

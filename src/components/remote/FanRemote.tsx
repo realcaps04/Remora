@@ -1,6 +1,6 @@
 import { Lightbulb, Power, RefreshCw, Timer, Wind } from 'lucide-react'
 import type { Device } from '../../types'
-import { profileById } from '../../data/irProfiles'
+import { isNumberedFan, profileById } from '../../data/irProfiles'
 import { Dial, FanSpeedControl } from './SpecialtyControls'
 import { RemoteButton } from './RemoteButton'
 
@@ -13,7 +13,7 @@ export function FanRemote({
 }) {
   const profile = profileById(device.irProfileId, device.type, device.brand)
   const running = device.state.power
-  const numbered = profile.layout === 'numbered' || profile.layout === 'withLight' || profile.layout === 'learned'
+  const numbered = isNumberedFan(profile.layout)
   const hint = running
     ? `${profile.name} · ${device.state.oscillation ? 'Reverse / swing on' : 'Running'}`
     : profile.hint
@@ -70,7 +70,7 @@ export function FanRemote({
           ) : null}
         </div>
         <div className="flex flex-col gap-5">
-          {profile.extras.includes('light') || profile.layout === 'withLight' ? (
+          {profile.extras.includes('light') || profile.layout === 'fan-light' ? (
             <RemoteButton aria-label="Light" onClick={() => send('fanLight')} active={device.state.brightness > 0}>
               <Lightbulb size={20} strokeWidth={1.6} />
             </RemoteButton>

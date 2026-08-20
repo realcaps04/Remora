@@ -146,7 +146,7 @@ export function AddDeviceScreen({ initialType }: { initialType?: DeviceType }) {
               Point Remora at your {brand} {categoryLabel(type).toLowerCase()} and tap Power.
             </p>
             <p className="mt-2 max-w-[280px] text-[13px] leading-relaxed text-[#636366]">
-              If nothing happens, the first code often isn’t the right one. Try the next set.
+              If nothing happens, this may not be the right remote. Try another one.
             </p>
             <div className="my-8">
               <PowerButton
@@ -158,21 +158,21 @@ export function AddDeviceScreen({ initialType }: { initialType?: DeviceType }) {
               />
             </div>
             <div className="mb-5 rounded-full bg-white/8 px-3 py-1 text-[12px] tracking-wide text-[#8e8e93]">
-              {learned ? 'Learned remote' : `Code ${codeIndex + 1} of ${codes.length} · ${profile.name}`}
+              {learned ? 'Learned remote' : `Remote ${codeIndex + 1} of ${codes.length} · ${profile.name}`}
             </div>
             <p className="mb-5 text-[16px] font-medium">Did it respond?</p>
             <Button onClick={() => setStep(5)} disabled={!tested && !learned}>
               Yes, Continue
             </Button>
             <Button variant="ghost" className="mt-2.5" onClick={tryNextCode}>
-              No, try next code
+              Try another remote
             </Button>
             <Button variant="quiet" className="mt-1" onClick={() => setOtherOpen(true)}>
               Other ways
             </Button>
             {lastCode ? (
               <p className="mt-4 max-w-[280px] text-[12px] leading-relaxed text-[#8e8e93]">
-                Last {brand} code. If this still fails, learn from the original remote.
+                Last {brand} remote. If this still fails, learn from the original remote.
               </p>
             ) : null}
           </div>
@@ -240,8 +240,8 @@ export function AddDeviceScreen({ initialType }: { initialType?: DeviceType }) {
           Universal remotes try several signal maps until the {brand} {categoryLabel(type).toLowerCase()} reacts.
         </p>
         <Way
-          title="Try next IR code"
-          body={`${profile.name} didn’t work? Send the next ${brand} set.`}
+          title="Try another remote"
+          body={`${profile.name} didn’t work? Switch to the next ${brand} layout.`}
           onClick={tryNextCode}
         />
         {codes.map((item, i) => (

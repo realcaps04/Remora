@@ -1,5 +1,6 @@
 import { AudioLines, CirclePlay, Power, VolumeX } from 'lucide-react'
 import type { Device } from '../../types'
+import { profileById } from '../../data/irProfiles'
 import { RemoteButton } from './RemoteButton'
 import { VolumeRocker } from './VolumeControl'
 
@@ -10,6 +11,9 @@ export function SoundbarRemote({
   device: Device
   send: (command: string) => void
 }) {
+  const profile = profileById(device.irProfileId, device.type, device.brand)
+  const mini = profile.layout === 'audio-mini'
+
   return (
     <div className="flex flex-col items-center px-6 pt-3 pb-8">
       <div className="dial mx-auto">
@@ -19,7 +23,7 @@ export function SoundbarRemote({
               {device.state.muted ? 'Mute' : device.state.volume}
             </div>
             <div className="mt-2 text-[12px] text-[#8e8e93]">
-              {device.state.power ? device.state.input : 'Standby'}
+              {device.state.power ? `${profile.name} · ${device.state.input}` : profile.hint}
             </div>
           </div>
         </div>
@@ -30,17 +34,21 @@ export function SoundbarRemote({
           <RemoteButton aria-label="Power" onClick={() => send('power')} active={device.state.power}>
             <Power size={22} strokeWidth={1.7} />
           </RemoteButton>
-          <RemoteButton aria-label={device.state.playing ? 'Pause' : 'Play'} onClick={() => send('playPause')}>
-            <CirclePlay size={26} strokeWidth={1.5} />
-          </RemoteButton>
+          {mini ? null : (
+            <RemoteButton aria-label={device.state.playing ? 'Pause' : 'Play'} onClick={() => send('playPause')}>
+              <CirclePlay size={26} strokeWidth={1.5} />
+            </RemoteButton>
+          )}
           <RemoteButton aria-label="Mute" onClick={() => send('mute')} active={device.state.muted}>
             <VolumeX size={22} strokeWidth={1.6} />
           </RemoteButton>
         </div>
         <div className="flex flex-col gap-5">
-          <RemoteButton aria-label="Input" onClick={() => send('input')}>
-            <AudioLines size={20} strokeWidth={1.6} />
-          </RemoteButton>
+          {mini ? null : (
+            <RemoteButton aria-label="Input" onClick={() => send('input')}>
+              <AudioLines size={20} strokeWidth={1.6} />
+            </RemoteButton>
+          )}
           <VolumeRocker onUp={() => send('volumeUp')} onDown={() => send('volumeDown')} />
         </div>
       </div>

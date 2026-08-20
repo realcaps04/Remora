@@ -55,43 +55,40 @@ export const CONNECTION_OPTIONS = [
   },
 ]
 
-export const BRANDS = [
-  'Samsung',
-  'LG',
-  'Sony',
-  'Tata Play',
-  'Airtel',
-  'Dish TV',
-  'Voltas',
-  'O General',
-  'Panasonic',
-  'Philips',
-  'Havells',
-  'Crompton',
-  'Orient',
-  'Colorbot',
-  'Daikin',
-  'Hisense',
-  'TCL',
-  'JBL',
-  'Bose',
-  'Xiaomi',
-  'Other Brand',
-]
+const OTHER = 'Other Brand'
 
-const FAN_BRANDS = [
-  'Havells',
-  'Crompton',
-  'Orient',
-  'Colorbot',
-  'Panasonic',
-  'Philips',
-  'Other Brand',
-]
+const BRANDS_BY_TYPE: Record<DeviceType, readonly string[]> = {
+  tv: ['Samsung', 'LG', 'Sony', 'Panasonic', 'Philips', 'Hisense', 'TCL', 'Xiaomi', 'OnePlus', 'Vu', 'Thomson', 'Sansui', OTHER],
+  projector: ['Epson', 'BenQ', 'Sony', 'ViewSonic', 'XGIMI', 'Panasonic', 'Samsung', OTHER],
+  dth: ['Tata Play', 'Airtel', 'Dish TV', 'd2h', 'Sun Direct', 'Jio', OTHER],
+  soundbar: ['JBL', 'Bose', 'Sony', 'Samsung', 'LG', 'Boat', 'Xiaomi', 'Philips', 'Hisense', OTHER],
+  speaker: ['JBL', 'Bose', 'Sony', 'Boat', 'Xiaomi', 'Philips', 'Samsung', OTHER],
+  hometheatre: ['Sony', 'Samsung', 'LG', 'Philips', 'JBL', 'Bose', OTHER],
+  fan: ['Havells', 'Crompton', 'Orient', 'Colorbot', 'Usha', 'Atomberg', 'Bajaj', 'Superfan', 'Panasonic', 'Philips', OTHER],
+  cooler: ['Symphony', 'Bajaj', 'Crompton', 'Orient', 'Havells', 'Kenstar', OTHER],
+  ac: ['Voltas', 'Daikin', 'O General', 'Samsung', 'LG', 'Panasonic', 'Hitachi', 'Blue Star', 'Lloyd', 'Carrier', 'Whirlpool', 'Godrej', OTHER],
+  light: ['Philips', 'Syska', 'Wipro', 'Xiaomi', 'Orient', 'Havells', 'Crompton', OTHER],
+  lamp: ['Philips', 'Syska', 'Wipro', 'Xiaomi', 'Orient', 'Havells', OTHER],
+  plug: ['Xiaomi', 'Wipro', 'Amazon', 'TP-Link', 'Syska', OTHER],
+  custom: [OTHER, 'Universal'],
+  other: ['Samsung', 'LG', 'Sony', 'Panasonic', 'Philips', 'Xiaomi', OTHER],
+}
+
+export const BRANDS = unique(Object.values(BRANDS_BY_TYPE).flat())
 
 export function brandsFor(type: DeviceType) {
-  if (type === 'fan' || type === 'cooler') return FAN_BRANDS
-  return BRANDS
+  return [...(BRANDS_BY_TYPE[type] ?? BRANDS_BY_TYPE.other)]
+}
+
+function unique(items: string[]) {
+  const seen = new Set<string>()
+  const out: string[] = []
+  for (const item of items) {
+    if (seen.has(item)) continue
+    seen.add(item)
+    out.push(item)
+  }
+  return out
 }
 
 export function categoryLabel(type: DeviceType) {
