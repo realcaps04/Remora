@@ -1,0 +1,67 @@
+import { BottomNavigation } from './components/common/BottomNavigation'
+import { useStore } from './state/store'
+import { SplashScreen } from './screens/SplashScreen'
+import { HomeScreen } from './screens/HomeScreen'
+import { DevicesScreen } from './screens/DevicesScreen'
+import { CategoryDevicesScreen } from './screens/CategoryDevicesScreen'
+import { RoomsScreen, RoomDetailScreen } from './screens/RoomsScreen'
+import { AddDeviceScreen } from './screens/AddDeviceScreen'
+import { DeviceRemoteScreen } from './screens/DeviceRemoteScreen'
+import { DeviceSettingsScreen } from './screens/DeviceSettingsScreen'
+import { ScenesScreen } from './screens/ScenesScreen'
+import { ActivityScreen } from './screens/ActivityScreen'
+import { FavoritesScreen } from './screens/FavoritesScreen'
+import { SettingsScreen } from './screens/SettingsScreen'
+import { AskRemoraScreen } from './screens/AskRemoraScreen'
+import { SearchScreen } from './screens/SearchScreen'
+
+function Screen() {
+  const { route } = useStore()
+
+  switch (route.name) {
+    case 'splash':
+      return <SplashScreen />
+    case 'home':
+      return <HomeScreen />
+    case 'devices':
+      return <DevicesScreen />
+    case 'category':
+      return <CategoryDevicesScreen type={route.type} />
+    case 'rooms':
+      return <RoomsScreen />
+    case 'room':
+      return <RoomDetailScreen roomId={route.roomId} />
+    case 'add-device':
+      return <AddDeviceScreen initialType={route.type} />
+    case 'remote':
+      return <DeviceRemoteScreen deviceId={route.deviceId} />
+    case 'device-settings':
+      return <DeviceSettingsScreen deviceId={route.deviceId} />
+    case 'scenes':
+      return <ScenesScreen />
+    case 'activity':
+      return <ActivityScreen />
+    case 'favorites':
+      return <FavoritesScreen />
+    case 'settings':
+      return <SettingsScreen />
+    case 'ask':
+      return <AskRemoraScreen />
+    case 'search':
+      return <SearchScreen />
+    default:
+      return <HomeScreen />
+  }
+}
+
+export default function App() {
+  const { route, tab, goTab } = useStore()
+  const hideNav = route.name === 'splash' || route.name === 'remote'
+
+  return (
+    <div className="app-frame">
+      <Screen />
+      {hideNav ? null : <BottomNavigation tab={tab} onChange={goTab} />}
+    </div>
+  )
+}

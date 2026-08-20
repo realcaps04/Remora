@@ -1,0 +1,393 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --color-void: #000000;
+  --color-ink: #f5f5f7;
+  --color-mute: #8e8e93;
+  --color-dim: #636366;
+  --color-line: #1c1c1e;
+  --color-raised: #161618;
+  --color-press: #2c2c2e;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  height: 100%;
+}
+
+html {
+  background: #000;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: #000;
+  color: #f5f5f7;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.011em;
+}
+
+#root {
+  display: flex;
+  justify-content: center;
+  background:
+    radial-gradient(1200px 600px at 50% -10%, #141416 0%, #000 55%);
+}
+
+button,
+input,
+textarea {
+  font-family: inherit;
+}
+
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.app-frame {
+  width: 100%;
+  max-width: 430px;
+  min-height: 100dvh;
+  min-height: 100svh;
+  background: #000;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.app-frame::before {
+  content: '';
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+@media (min-width: 480px) {
+  #root {
+    padding: 24px 0;
+    align-items: center;
+  }
+
+  .app-frame {
+    min-height: min(900px, calc(100dvh - 48px));
+    height: min(900px, calc(100dvh - 48px));
+    border-radius: 36px;
+    overflow: hidden;
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.06),
+      0 40px 80px rgba(0, 0, 0, 0.65);
+  }
+
+  .app-frame::before {
+    border-radius: 36px;
+  }
+}
+
+.page-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  padding-bottom: calc(88px + env(safe-area-inset-bottom));
+}
+
+.page-scroll.no-nav {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Tactile remote material */
+.mat {
+  background: linear-gradient(180deg, #2f2f33 0%, #1a1a1d 48%, #101012 100%);
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, 0.55),
+    0 1px 0 rgba(255, 255, 255, 0.08) inset,
+    0 -8px 14px rgba(0, 0, 0, 0.45) inset;
+}
+
+.mat:active {
+  transform: scale(0.97);
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.5),
+    0 2px 8px rgba(0, 0, 0, 0.55) inset,
+    0 1px 0 rgba(255, 255, 255, 0.06) inset;
+  filter: brightness(1.08);
+}
+
+.mat-static {
+  background: linear-gradient(180deg, #2f2f33 0%, #1a1a1d 48%, #101012 100%);
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, 0.55),
+    0 1px 0 rgba(255, 255, 255, 0.08) inset,
+    0 -8px 14px rgba(0, 0, 0, 0.45) inset;
+}
+
+.remote-btn {
+  width: 72px;
+  height: 72px;
+  border: 0;
+  border-radius: 999px;
+  color: #f5f5f7;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: transform 80ms ease, filter 80ms ease, box-shadow 80ms ease;
+}
+
+.remote-btn.sm {
+  width: 58px;
+  height: 58px;
+}
+
+.remote-btn.lg {
+  width: 84px;
+  height: 84px;
+}
+
+.remote-btn.on {
+  color: #fff;
+}
+
+.remote-btn.armed {
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(255, 255, 255, 0.12) inset,
+    0 -8px 14px rgba(0, 0, 0, 0.45) inset;
+}
+
+.rocker {
+  width: 72px;
+  height: 168px;
+  border-radius: 36px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.rocker button {
+  flex: 1;
+  border: 0;
+  background: transparent;
+  color: #f5f5f7;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: filter 80ms ease;
+}
+
+.rocker button:active {
+  filter: brightness(1.18);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.dpad {
+  --size: min(78vw, 318px);
+  width: var(--size);
+  height: var(--size);
+  position: relative;
+  border-radius: 50%;
+  background:
+    linear-gradient(180deg, #3a3a40 0%, #222226 38%, #121214 100%);
+  box-shadow:
+    0 22px 48px rgba(0, 0, 0, 0.7),
+    0 1px 0 rgba(255, 255, 255, 0.1) inset,
+    0 -14px 22px rgba(0, 0, 0, 0.55) inset;
+}
+
+.dpad-dir {
+  position: absolute;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.dpad-dir.up {
+  top: 4%;
+  left: 24%;
+  width: 52%;
+  height: 28%;
+}
+
+.dpad-dir.down {
+  bottom: 4%;
+  left: 24%;
+  width: 52%;
+  height: 28%;
+}
+
+.dpad-dir.left {
+  top: 24%;
+  left: 4%;
+  width: 28%;
+  height: 52%;
+}
+
+.dpad-dir.right {
+  top: 24%;
+  right: 4%;
+  width: 28%;
+  height: 52%;
+}
+
+.dpad-dir:active {
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.08), transparent 70%);
+}
+
+.dpad-dot {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(245, 245, 247, 0.55);
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.22);
+  pointer-events: none;
+}
+
+.dpad-dot.n {
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.dpad-dot.e {
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.dpad-dot.s {
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.dpad-dot.w {
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.dpad-ok {
+  position: absolute;
+  inset: 22%;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  background:
+    radial-gradient(circle at 50% 34%, #3c3c42 0%, #1d1d22 58%, #101014 100%);
+  box-shadow:
+    0 12px 24px rgba(0, 0, 0, 0.55),
+    0 1px 1px rgba(255, 255, 255, 0.16) inset,
+    0 -8px 16px rgba(0, 0, 0, 0.5) inset;
+  transition: transform 80ms ease, filter 80ms ease;
+}
+
+.dpad-ok:active {
+  transform: scale(0.97);
+  filter: brightness(1.1);
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.5),
+    0 6px 14px rgba(0, 0, 0, 0.55) inset;
+}
+
+.dial {
+  --size: min(78vw, 318px);
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  position: relative;
+  display: grid;
+  place-items: center;
+  background:
+    linear-gradient(180deg, #3a3a40 0%, #222226 38%, #121214 100%);
+  box-shadow:
+    0 22px 48px rgba(0, 0, 0, 0.7),
+    0 1px 0 rgba(255, 255, 255, 0.1) inset,
+    0 -14px 22px rgba(0, 0, 0, 0.55) inset;
+}
+
+.dial-face {
+  width: 56%;
+  height: 56%;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  background:
+    radial-gradient(circle at 50% 34%, #3c3c42 0%, #1d1d22 58%, #101014 100%);
+  box-shadow:
+    0 12px 24px rgba(0, 0, 0, 0.55),
+    0 1px 1px rgba(255, 255, 255, 0.16) inset,
+    0 -8px 16px rgba(0, 0, 0, 0.5) inset;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-dot.connected {
+  background: #34c759;
+  box-shadow: 0 0 8px rgba(52, 199, 89, 0.45);
+}
+
+.status-dot.connecting {
+  background: #ffd60a;
+}
+
+.status-dot.offline,
+.status-dot.disconnected {
+  background: #636366;
+}
+
+.status-dot.unknown {
+  background: #8e8e93;
+}
+
+.focus-ring:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.55);
+  outline-offset: 3px;
+}
+
+.splash-mark {
+  letter-spacing: 0.28em;
+}
+
+.fade-in {
+  animation: fade-in 420ms ease both;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.pulse-soft {
+  animation: pulse-soft 1.4s ease infinite;
+}
+
+@keyframes pulse-soft {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 1;
+  }
+}
