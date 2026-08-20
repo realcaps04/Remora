@@ -20,7 +20,7 @@ export function UpdatePopup({
         aria-modal="true"
         aria-labelledby="update-title"
         aria-describedby="update-copy"
-        className="relative w-full rounded-[28px] bg-[#161618] px-5 py-6 shadow-[0_24px_60px_rgba(0,0,0,0.55)]"
+        className="relative w-full rounded-[28px] bg-[#161618] px-5 py-6 text-center shadow-[0_24px_60px_rgba(0,0,0,0.55)]"
       >
         <Wordmark className="text-[16px] text-white" />
         <h2 id="update-title" className="mt-3 text-[22px] font-medium tracking-tight">
