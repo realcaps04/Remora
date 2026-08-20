@@ -15,6 +15,9 @@ export function ActivityScreen() {
       <PageContainer>
         <Group title="Today" items={today} />
         <Group title="Earlier" items={earlier} />
+        {activity.length === 0 ? (
+          <p className="pt-8 text-[15px] text-[#8e8e93]">No activity yet. Controls you use will appear here.</p>
+        ) : null}
       </PageContainer>
     </div>
   )
