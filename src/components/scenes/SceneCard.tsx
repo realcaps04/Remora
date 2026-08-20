@@ -1,5 +1,6 @@
 import type { Scene } from '../../types'
 import { cn } from '../../lib/cn'
+import { Wordmark } from '../common/Wordmark'
 
 export function SceneCard({
   scene,
@@ -45,7 +46,7 @@ export function SceneExecution({ open, name }: { open: boolean; name: string }) 
   return (
     <div className="absolute inset-0 z-40 grid place-items-center bg-black/70">
       <div className="text-center">
-        <div className="pulse-soft text-[13px] tracking-[0.22em] text-[#8e8e93] uppercase">Remora</div>
+        <Wordmark className="pulse-soft text-[16px] text-white" />
         <div className="mt-3 text-[22px] font-medium tracking-tight">Running {name}</div>
       </div>
     </div>

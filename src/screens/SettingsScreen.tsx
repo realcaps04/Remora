@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { Header } from '../components/common/Header'
 import { Toggle } from '../components/common/Toggle'
 import { PageContainer } from '../components/layout/Primitives'
+import { Wordmark } from '../components/common/Wordmark'
 import { askToInstall, isStandaloneApp } from '../lib/useInstallPrompt'
 import { useStore } from '../state/store'
 
@@ -13,7 +14,7 @@ export function SettingsScreen() {
     <div className="page-scroll">
       <Header title="Settings" />
       <PageContainer>
-        <p className="mb-6 text-[13px] tracking-[0.22em] text-[#8e8e93] uppercase">Remora Settings</p>
+        <Wordmark className="mb-6 text-[20px] text-white" />
 
         <Group title="Account">
           <Row label="Account" value="Coming soon" />

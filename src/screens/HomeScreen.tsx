@@ -1,4 +1,5 @@
 import { Search, Star } from 'lucide-react'
+import { Wordmark } from '../components/common/Wordmark'
 import { DeviceIcon } from '../components/devices/DeviceIcon'
 import { DeviceStatusBadge } from '../components/devices/DeviceStatus'
 import { RoomCard } from '../components/devices/DeviceCard'
@@ -19,7 +20,7 @@ export function HomeScreen() {
       <PageContainer className="pt-[max(28px,calc(env(safe-area-inset-top)+12px))]">
         <div className="flex items-start justify-between">
           <div>
-            <div className="text-[13px] tracking-[0.22em] text-[#8e8e93] uppercase">Remora</div>
+            <Wordmark className="text-[18px] text-white" />
             <h1 className="mt-5 text-[34px] font-medium leading-none tracking-tight">{greeting()}</h1>
             <p className="mt-3 text-[15px] text-[#8e8e93]">Welcome back to Remora.</p>
           </div>

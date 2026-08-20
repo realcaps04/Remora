@@ -1,4 +1,5 @@
 import { Button } from './Button'
+import { Wordmark } from './Wordmark'
 
 export function UpdatePopup({
   open,
@@ -21,7 +22,7 @@ export function UpdatePopup({
         aria-describedby="update-copy"
         className="relative w-full rounded-[28px] bg-[#161618] px-5 py-6 shadow-[0_24px_60px_rgba(0,0,0,0.55)]"
       >
-        <p className="text-[12px] tracking-[0.22em] text-[#8e8e93] uppercase">Remora</p>
+        <Wordmark className="text-[16px] text-white" />
         <h2 id="update-title" className="mt-3 text-[22px] font-medium tracking-tight">
           Update ready
         </h2>

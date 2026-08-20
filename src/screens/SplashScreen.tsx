@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { Wordmark } from '../components/common/Wordmark'
 import { useStore } from '../state/store'
 
 export function SplashScreen() {
@@ -11,8 +12,8 @@ export function SplashScreen() {
 
   return (
     <div className="flex min-h-full flex-1 flex-col items-center justify-center px-8">
-      <div className="splash-mark text-[13px] font-medium uppercase text-[#8e8e93]">Remora</div>
-      <h1 className="mt-5 text-[42px] font-medium tracking-[-0.04em]">Remora</h1>
+      <Wordmark className="text-[14px] text-[#8e8e93]" />
+      <Wordmark as="h1" className="mt-6 text-[52px] text-white" />
       <p className="mt-3 text-[15px] text-[#8e8e93]">One app. Every remote.</p>
     </div>
   )
