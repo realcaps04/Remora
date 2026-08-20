@@ -1,5 +1,6 @@
 import type { Device } from '../../types'
 import { categoryLabel } from '../../data/catalog'
+import { learnedProfileId } from '../../data/irProfiles'
 import { recordedCount } from '../../services/irLearner'
 import { useStore } from '../../state/store'
 import { RecordRemoteSheet } from './RecordRemoteSheet'
@@ -25,7 +26,7 @@ export function FixCodesSheet({
       onSave={(library) => {
         updateDevice(device.id, {
           irLibrary: library,
-          irProfileId: `learned:${device.type}:${device.brand.toLowerCase()}`,
+          irProfileId: learnedProfileId(device.type, device.brand),
         })
         onClose()
       }}

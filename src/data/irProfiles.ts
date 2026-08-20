@@ -249,16 +249,23 @@ export function profilesFor(type: DeviceType, brand: string): IrProfile[] {
   return waysFor(type, brand).map((way) => toProfile(type, brand, way))
 }
 
+export function learnedProfileId(type: DeviceType, brand: string) {
+  return `learned:${type}:${slug(brand)}`
+}
+
 export function learnedProfile(type: DeviceType, brand: string): IrProfile {
+  const fan = type === 'fan' || type === 'cooler'
   return {
-    id: `learned:${type}:${slug(brand)}`,
+    id: learnedProfileId(type, brand),
     type,
     brand,
     name: 'Learned remote',
-    hint: 'Captured from your original remote',
-    layout: 'learn',
-    maxSpeed: 3,
-    extras: ['timer', 'light'],
+    hint: fan
+      ? 'Buttons are saved in the app. Most BLDC fans use RF, which a phone browser cannot send.'
+      : 'Captured from your original remote',
+    layout: fan ? 'fan-numbered' : 'learn',
+    maxSpeed: 5,
+    extras: fan ? ['timer', 'light', 'sleep'] : [],
   }
 }
 

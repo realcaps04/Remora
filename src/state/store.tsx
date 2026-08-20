@@ -11,6 +11,7 @@ import { activity as seedActivity, devices as seedDevices, quickActions as seedQ
 import { defaultDeviceState } from '../data/defaults'
 import { commandLabel, sendCommand as dispatchHardware } from '../services/deviceController'
 import { lookupSignal, transmitIr } from '../services/irLearner'
+import { learnedProfileId } from '../data/irProfiles'
 import { haptic } from '../lib/haptics'
 import type {
   ActivityEvent,
@@ -304,7 +305,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         lastUsedAt: Date.now(),
         status: device.status === 'offline' ? 'offline' : 'connecting',
       }
-      const learned = lookupSignal(device.irLibrary, command, payload)
+      const learned = lookupSignal(device.irLibrary, command, payload, device.state)
       if (learned) await transmitIr(learned)
       const pending = dispatchHardware(next, command, payload)
       dispatch({ type: 'setDevice', device: next })
@@ -372,7 +373,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         status: 'connected',
         favorite: false,
         lastUsedAt: Date.now(),
-        irProfileId: input.irLibrary ? `learned:${input.type}:${input.brand.toLowerCase()}` : input.irProfileId,
+        irProfileId: input.irLibrary ? learnedProfileId(input.type, input.brand) : input.irProfileId,
         irLibrary: input.irLibrary,
         state: defaultDeviceState(),
       }

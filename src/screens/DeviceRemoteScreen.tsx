@@ -9,7 +9,7 @@ import { NumericPad } from '../components/remote/NumericPad'
 import { RemoteButton } from '../components/remote/RemoteButton'
 import { PowerButton } from '../components/remote/PowerButton'
 import { profileById } from '../data/irProfiles'
-import { recordedCount } from '../services/irLearner'
+import { recordedCount, canEmitIr } from '../services/irLearner'
 import { useStore } from '../state/store'
 
 export function DeviceRemoteScreen({ deviceId }: { deviceId: string }) {
@@ -68,6 +68,14 @@ export function DeviceRemoteScreen({ deviceId }: { deviceId: string }) {
         device={device}
         send={(command, value) => send(device.id, command, value !== undefined ? { value } : undefined)}
       />
+
+      {recordedCount(device.irLibrary) > 0 && !canEmitIr() ? (
+        <p className="px-8 pb-3 text-center text-[13px] leading-relaxed text-[#8e8e93]">
+          {device.type === 'fan' || device.type === 'cooler'
+            ? 'Buttons update this screen only. Most BLDC fans use radio (RF), not infrared, and Chrome cannot send that signal. Keep using the original remote to run the fan.'
+            : 'Buttons update this screen only. This browser cannot fire infrared at the device. Recording saw the original remote LED; it cannot replay it.'}
+        </p>
+      ) : null}
 
       {device.connectionType === 'ir' ? (
         <div className="px-8 pb-4">

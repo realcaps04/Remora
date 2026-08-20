@@ -122,7 +122,10 @@ export function RecordRemoteSheet({
     <BottomSheet open={open} title="Record from original remote" onClose={close}>
       <p className="text-[13px] leading-relaxed text-[#8e8e93]">
         Point the {brand} {categoryLabel(type).toLowerCase()} remote LED at the camera, 3–8 cm away. Remora watches for a
-        real infrared flash and will not save a dummy code.
+        real flash and will not save a dummy code.
+        {type === 'fan' || type === 'cooler'
+          ? ' Many BLDC fans use radio (RF), not IR — the camera can see the LED blink, but the phone cannot replay that radio command to the fan.'
+          : ''}
       </p>
       <div className="relative mt-4 overflow-hidden rounded-2xl bg-black">
         <video

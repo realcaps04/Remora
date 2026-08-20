@@ -1,4 +1,4 @@
-import type { CommandPayload, IrLibrary, IrSignal } from '../types'
+import type { CommandPayload, DeviceState, IrLibrary, IrSignal } from '../types'
 import { startIrCamera, waitForIrBurst } from './irCamera'
 
 const CARRIER = 38000
@@ -62,17 +62,61 @@ export async function captureIr(key: string, abort?: AbortSignal): Promise<IrSig
   }
 }
 
-export async function transmitIr(signal: IrSignal) {
-  await wait(Math.min(180, 40 + signal.raw.length))
-  return true
+export type TransmitResult = { sent: boolean; reason?: string }
+
+type IrBridge = {
+  hasEmitter?: () => boolean
+  transmit: (frequency: number, pattern: number[]) => void | Promise<void>
 }
 
-export function lookupSignal(library: IrLibrary | undefined, command: string, payload?: CommandPayload) {
+function nativeIr(): IrBridge | undefined {
+  const bridge = (window as Window & { RemoraIr?: IrBridge }).RemoraIr
+  if (!bridge?.transmit) return undefined
+  if (bridge.hasEmitter && !bridge.hasEmitter()) return undefined
+  return bridge
+}
+
+export function canEmitIr() {
+  return Boolean(nativeIr())
+}
+
+export async function transmitIr(signal: IrSignal): Promise<TransmitResult> {
+  const bridge = nativeIr()
+  if (bridge) {
+    await bridge.transmit(signal.frequency, signal.raw)
+    return { sent: true }
+  }
+  await wait(Math.min(180, 40 + signal.raw.length))
+  return {
+    sent: false,
+    reason:
+      'This browser cannot send infrared or radio. Recording saw the remote LED; it cannot replay that signal to the fan.',
+  }
+}
+
+export function lookupSignal(
+  library: IrLibrary | undefined,
+  command: string,
+  payload?: CommandPayload,
+  state?: Pick<DeviceState, 'power' | 'speed'>,
+) {
   if (!library) return undefined
   const key = libraryKeyFor(command, payload)
   if (library[key]) return library[key]
-  if (command === 'power') return library.power ?? library.on ?? library.off
+  if (command === 'power') {
+    if (state?.power) return library.off ?? library.power
+    return library.on ?? library.power ?? library.off
+  }
   if (command === 'setSpeed' && payload?.value === 0) return library.off
+  if (command === 'speedUp') {
+    const next = Math.min(5, Math.max(1, (state?.speed ?? 0) + 1))
+    return library[`speed${next}`] ?? library.on
+  }
+  if (command === 'speedDown') {
+    const current = state?.speed ?? 0
+    if (current <= 1) return library.off
+    return library[`speed${current - 1}`]
+  }
   return undefined
 }
 
