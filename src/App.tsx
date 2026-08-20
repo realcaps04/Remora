@@ -1,4 +1,6 @@
 import { BottomNavigation } from './components/common/BottomNavigation'
+import { UpdatePopup } from './components/common/UpdatePopup'
+import { useAppUpdate } from './lib/useAppUpdate'
 import { useStore } from './state/store'
 import { SplashScreen } from './screens/SplashScreen'
 import { HomeScreen } from './screens/HomeScreen'
@@ -56,12 +58,14 @@ function Screen() {
 
 export default function App() {
   const { route, tab, goTab } = useStore()
+  const { updateReady, reload, later } = useAppUpdate()
   const hideNav = route.name === 'splash' || route.name === 'remote'
 
   return (
     <div className="app-frame">
       <Screen />
       {hideNav ? null : <BottomNavigation tab={tab} onChange={goTab} />}
+      <UpdatePopup open={updateReady} onUpdate={() => void reload()} onLater={later} />
     </div>
   )
 }

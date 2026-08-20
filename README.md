@@ -23,3 +23,9 @@ Remotes are not generic. TV, DTH, fan, AC, soundbar, lights, and plugs each have
 ## Stack
 
 React, Vite, TypeScript, Tailwind CSS, Lucide React.
+
+## Deploy (Vercel)
+
+Import this GitHub repo in Vercel. Framework is Vite, output is `dist`.
+
+Each new deployment writes a `version.json`. Open tabs detect it and show an **Update now** popup so users reload onto the latest build instead of a stale cache.
